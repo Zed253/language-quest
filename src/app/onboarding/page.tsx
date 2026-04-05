@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/lib/auth';
+import { createCharacter } from '@/modules/character-system';
+import { updateUserProfile } from '@/modules/data-layer';
 import type { CharacterTrait, Specialty } from '@/modules/character-system';
 
 type Step = 'welcome' | 'universe' | 'language' | 'traits' | 'specialty' | 'name' | 'first-word' | 'done';
@@ -32,6 +35,8 @@ const HP_SPECIALTIES: { id: Specialty; label: string; bonus: string }[] = [
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
   const [step, setStep] = useState<Step>('welcome');
   const [universe, setUniverse] = useState<'one-piece' | 'harry-potter' | null>(null);
   const [language, setLanguage] = useState<'es' | 'fr' | null>(null);
@@ -269,12 +274,27 @@ export default function OnboardingPage() {
           <Button
             size="lg"
             className="w-full text-lg py-6"
-            onClick={() => {
-              // TODO: persist character + redirect to dashboard
+            disabled={saving}
+            onClick={async () => {
+              if (!user) return;
+              setSaving(true);
+
+              // Persist character
+              await createCharacter(user.id, selectedTraits, specialty);
+
+              // Update user profile with language + theme
+              await updateUserProfile(user.id, {
+                display_name: displayName,
+                target_language: language!,
+                native_language: language === 'es' ? 'fr' : 'es',
+                theme_id: universe!,
+              });
+
+              setSaving(false);
               router.push('/');
             }}
           >
-            Return tomorrow and your journey continues
+            {saving ? 'Saving...' : 'Return tomorrow and your journey continues'}
           </Button>
         </div>
       </main>

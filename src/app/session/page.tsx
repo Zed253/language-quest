@@ -7,6 +7,7 @@ import { useSessionStore } from '@/stores/session-store';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { TappableText } from '@/components/TappableText';
+import { PostSessionMessage } from '@/components/PostSessionMessage';
 import { addCards } from '@/modules/fsrs-engine';
 
 export default function SessionPage() {
@@ -237,6 +238,16 @@ export default function SessionPage() {
               <div className="text-2xl font-bold text-amber-500">+{completeData.currencyEarned}</div>
               <div className="text-sm text-muted-foreground">Berrys</div>
             </div>
+          </div>
+
+          {/* Post-session message to partner */}
+          <div className="rounded-xl border p-6">
+            <PostSessionMessage
+              userId={user!.id}
+              targetLanguage="es"
+              phase={1}
+              onDone={() => {}}
+            />
           </div>
 
           <Link href="/">
