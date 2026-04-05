@@ -75,32 +75,61 @@ export function ChatStream({
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let fullContent = '';
+      let buffer = ''; // Buffer for incomplete SSE lines
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+        // Append decoded chunk to buffer
+        buffer += decoder.decode(value, { stream: true });
+
+        // Split buffer by double newline (SSE event separator) or single newline
+        const lines = buffer.split('\n');
+        // Keep the last line in buffer (might be incomplete)
+        buffer = lines.pop() || '';
 
         for (const line of lines) {
-          const data = line.slice(6);
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith('data:')) continue;
+
+          const data = trimmed.slice(5).trim(); // Remove "data:" prefix
           if (data === '[DONE]') continue;
 
           try {
             const parsed = JSON.parse(data);
             const delta = parsed.choices?.[0]?.delta?.content || '';
-            fullContent += delta;
+            if (delta) {
+              fullContent += delta;
 
-            // Update the last message with streamed content
-            setMessages(prev => {
-              const updated = [...prev];
-              updated[updated.length - 1] = { role: 'assistant', content: fullContent };
-              return updated;
-            });
+              setMessages(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: 'assistant', content: fullContent };
+                return updated;
+              });
+            }
           } catch {
-            // Skip malformed chunks
+            // Incomplete JSON chunk -- will be completed in next read
           }
+        }
+      }
+
+      // Process any remaining buffer
+      if (buffer.trim().startsWith('data:')) {
+        const data = buffer.trim().slice(5).trim();
+        if (data && data !== '[DONE]') {
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed.choices?.[0]?.delta?.content || '';
+            if (delta) {
+              fullContent += delta;
+              setMessages(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: 'assistant', content: fullContent };
+                return updated;
+              });
+            }
+          } catch { /* ignore */ }
         }
       }
     } catch (e) {
