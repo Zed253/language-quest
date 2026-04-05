@@ -71,14 +71,10 @@ export default function Dashboard() {
           <div className="text-muted-foreground">Loading...</div>
         ) : stats && stats.total === 0 ? (
           /* First time user -- no cards yet */
-          <div className="text-center py-12 rounded-xl border-2 border-dashed space-y-4 animate-fade-in">
-            <div className="text-4xl">&#127758;</div>
-            <h2 className="text-xl font-bold">Welcome aboard!</h2>
-            <p className="text-muted-foreground">Take a quick assessment to calibrate your starting level.</p>
-            <Link href="/assessment">
-              <Button size="lg">Start Assessment</Button>
-            </Link>
-          </div>
+          <FirstTimeSetup userId={userId} onSeeded={() => {
+            // Reload stats after seeding
+            getStats(userId).then(r => { if (r.ok) setStats(r.data); });
+          }} />
         ) : stats ? (
           <>
             {/* Stats grid */}
@@ -177,6 +173,58 @@ function StatCard({
         {value}
       </div>
       <div className="text-sm text-muted-foreground">{label}</div>
+    </div>
+  );
+}
+
+function FirstTimeSetup({ userId, onSeeded }: { userId: string; onSeeded: () => void }) {
+  const [seeding, setSeeding] = useState(false);
+  const [seeded, setSeeded] = useState(false);
+
+  const handleSeed = async () => {
+    setSeeding(true);
+    try {
+      const res = await fetch('/api/seed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, targetLanguage: 'es' }),
+      });
+      if (res.ok) {
+        setSeeded(true);
+        onSeeded();
+      }
+    } catch { /* silent */ }
+    setSeeding(false);
+  };
+
+  if (seeded) {
+    return (
+      <div className="text-center py-12 rounded-xl border-2 border-green-500 bg-green-50 space-y-4 animate-fade-in">
+        <div className="text-4xl">&#127881;</div>
+        <h2 className="text-xl font-bold">200 flashcards loaded!</h2>
+        <p className="text-muted-foreground">You can now start learning. Take the assessment or jump straight in.</p>
+        <div className="flex gap-3 justify-center">
+          <Link href="/assessment">
+            <Button>Take Assessment</Button>
+          </Link>
+          <Link href="/session">
+            <Button variant="outline">Start Session</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-center py-12 rounded-xl border-2 border-dashed space-y-4 animate-fade-in">
+      <div className="text-4xl">&#127758;</div>
+      <h2 className="text-xl font-bold">Welcome aboard, Captain!</h2>
+      <p className="text-muted-foreground">Let&apos;s load your first vocabulary deck and calibrate your level.</p>
+      <div className="flex gap-3 justify-center">
+        <Button size="lg" onClick={handleSeed} disabled={seeding}>
+          {seeding ? 'Loading vocabulary...' : 'Load 200 Flashcards'}
+        </Button>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Increase timeout for Vercel (default is 10s, we need more for LLM)
-export const maxDuration = 30;
+// Vercel Hobby plan: max 10s. Pro plan: up to 60s.
+// Keep at 10 for Hobby compatibility. LLM calls must be fast (gpt-4o-mini).
+export const maxDuration = 10;
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
