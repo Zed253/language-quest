@@ -37,9 +37,10 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-background flex items-center justify-center p-8">
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-md w-full space-y-8 animate-fade-in">
         <div className="text-center">
-          <h1 className="text-4xl font-bold">Language Quest</h1>
+          <div className="text-6xl mb-4">&#x1F3F4;&#x200D;&#x2620;&#xFE0F;</div>
+          <h1 className="text-4xl font-bold text-primary">Language Quest</h1>
           <p className="text-muted-foreground mt-2">
             {mode === 'login' ? 'Welcome back, adventurer.' : 'Begin your journey.'}
           </p>

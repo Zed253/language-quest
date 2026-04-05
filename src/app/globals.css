@@ -46,75 +46,140 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* One Piece theme colors */
+  --color-op-red: #DC2626;
+  --color-op-gold: #F59E0B;
+  --color-op-blue: #2563EB;
+  --color-op-sand: #FEF3C7;
+  --color-op-dark: #1C1917;
+
+  /* Harry Potter theme colors */
+  --color-hp-purple: #7C3AED;
+  --color-hp-gold: #D97706;
+  --color-hp-green: #059669;
+  --color-hp-mist: #F5F3FF;
 }
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+/* ============================================================
+   One Piece Theme (default)
+   ============================================================ */
+:root, .theme-one-piece {
+  --background: #FFFBF0;
+  --foreground: #1C1917;
+  --card: #FFFFFF;
+  --card-foreground: #1C1917;
+  --popover: #FFFFFF;
+  --popover-foreground: #1C1917;
+  --primary: #DC2626;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FEF3C7;
+  --secondary-foreground: #92400E;
+  --muted: #F5F0E8;
+  --muted-foreground: #78716C;
+  --accent: #2563EB;
+  --accent-foreground: #FFFFFF;
+  --destructive: #B91C1C;
+  --border: #E7E0D6;
+  --input: #E7E0D6;
+  --ring: #DC2626;
+  --chart-1: #DC2626;
+  --chart-2: #F59E0B;
+  --chart-3: #2563EB;
+  --chart-4: #059669;
+  --chart-5: #7C3AED;
+  --radius: 0.75rem;
+  --sidebar: #FEF3C7;
+  --sidebar-foreground: #1C1917;
+  --sidebar-primary: #DC2626;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FDE68A;
+  --sidebar-accent-foreground: #92400E;
+  --sidebar-border: #E7E0D6;
+  --sidebar-ring: #DC2626;
+}
+
+/* ============================================================
+   Harry Potter Theme
+   ============================================================ */
+.theme-harry-potter {
+  --background: #FAF5FF;
+  --foreground: #1E1B4B;
+  --card: #FFFFFF;
+  --card-foreground: #1E1B4B;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E1B4B;
+  --primary: #7C3AED;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F3FF;
+  --secondary-foreground: #5B21B6;
+  --muted: #EDE9FE;
+  --muted-foreground: #6B7280;
+  --accent: #D97706;
+  --accent-foreground: #FFFFFF;
+  --destructive: #B91C1C;
+  --border: #DDD6FE;
+  --input: #DDD6FE;
+  --ring: #7C3AED;
+  --chart-1: #7C3AED;
+  --chart-2: #D97706;
+  --chart-3: #059669;
+  --chart-4: #DC2626;
+  --chart-5: #2563EB;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #F5F3FF;
+  --sidebar-foreground: #1E1B4B;
+  --sidebar-primary: #7C3AED;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EDE9FE;
+  --sidebar-accent-foreground: #5B21B6;
+  --sidebar-border: #DDD6FE;
+  --sidebar-ring: #7C3AED;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* ============================================================
+   Dark mode variants
+   ============================================================ */
+.dark, .dark.theme-one-piece {
+  --background: #1C1917;
+  --foreground: #FEF3C7;
+  --card: #292524;
+  --card-foreground: #FEF3C7;
+  --popover: #292524;
+  --popover-foreground: #FEF3C7;
+  --primary: #EF4444;
+  --primary-foreground: #FFFFFF;
+  --secondary: #44403C;
+  --secondary-foreground: #FDE68A;
+  --muted: #44403C;
+  --muted-foreground: #A8A29E;
+  --accent: #3B82F6;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --border: #44403C;
+  --input: #44403C;
+  --ring: #EF4444;
+}
+
+.dark.theme-harry-potter {
+  --background: #0F0A1E;
+  --foreground: #E9D5FF;
+  --card: #1E1545;
+  --card-foreground: #E9D5FF;
+  --popover: #1E1545;
+  --popover-foreground: #E9D5FF;
+  --primary: #A78BFA;
+  --primary-foreground: #FFFFFF;
+  --secondary: #2E1065;
+  --secondary-foreground: #DDD6FE;
+  --muted: #2E1065;
+  --muted-foreground: #A78BFA;
+  --accent: #FBBF24;
+  --accent-foreground: #1E1B4B;
+  --destructive: #EF4444;
+  --border: #3B2980;
+  --input: #3B2980;
+  --ring: #A78BFA;
 }
 
 @layer base {
@@ -127,4 +192,34 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ============================================================
+   Custom animations
+   ============================================================ */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+  50% { box-shadow: 0 0 20px 4px rgba(220, 38, 38, 0.2); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }

@@ -42,21 +42,21 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen bg-background p-8">
       <div className="max-w-2xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between animate-fade-in">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">
+            <h1 className="text-4xl font-bold tracking-tight text-primary">
               Language Quest
             </h1>
             <p className="text-muted-foreground mt-2">
-              Your daily Spanish training awaits.
+              Your daily training awaits, Captain.
             </p>
           </div>
           <div className="flex gap-2">
             <Link href="/crew">
-              <Button variant="outline" size="sm">Crew</Button>
+              <Button variant="outline" size="sm">&#x1F6A2; Crew</Button>
             </Link>
             <Link href="/onboarding">
-              <Button variant="outline" size="sm">Profile</Button>
+              <Button variant="outline" size="sm">&#x1F9ED; Profile</Button>
             </Link>
           </div>
         </div>
@@ -75,8 +75,8 @@ export default function Dashboard() {
 
             {/* Start session button (AI-powered) */}
             <Link href="/session">
-              <Button size="lg" className="w-full text-lg py-6">
-                Start Today&apos;s Session
+              <Button size="lg" className="w-full text-lg py-8 animate-pulse-glow font-bold tracking-wide">
+                &#x2693; Start Today&apos;s Session
               </Button>
             </Link>
 
