@@ -85,12 +85,28 @@ export default function Dashboard() {
               <StatCard label="Mastered" value={stats.mastered} />
             </div>
 
-            {/* Start session button (AI-powered) */}
-            <Link href="/session">
-              <Button size="lg" className="w-full text-lg py-8 animate-pulse-glow font-bold tracking-wide">
-                &#x2693; Start Today&apos;s Session
-              </Button>
-            </Link>
+            {/* Main actions */}
+            <div className="grid grid-cols-2 gap-3">
+              <Link href="/session" className="col-span-2">
+                <Button size="lg" className="w-full text-lg py-8 animate-pulse-glow font-bold tracking-wide">
+                  &#x2693; Start Today&apos;s Session
+                </Button>
+              </Link>
+              <Link href="/chat">
+                <Button variant="outline" className="w-full py-4 text-lg">
+                  &#x1F468;&#x200D;&#x1F373; Mentor
+                  <br/>
+                  <span className="text-xs text-muted-foreground">Chat + Traduction</span>
+                </Button>
+              </Link>
+              <Link href="/chat">
+                <Button variant="outline" className="w-full py-4 text-lg">
+                  &#x1F504; Traduccion
+                  <br/>
+                  <span className="text-xs text-muted-foreground">Rapide ou Aprender</span>
+                </Button>
+              </Link>
+            </div>
 
             {/* Quick actions */}
             <div className="grid grid-cols-2 gap-3">

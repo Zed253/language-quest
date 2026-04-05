@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -26,18 +28,12 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json(
-        { error: `TTS API error: ${response.status}`, details: errorText },
-        { status: response.status }
-      );
+      return NextResponse.json({ error: errorText }, { status: response.status });
     }
 
     const audioBuffer = await response.arrayBuffer();
-    return new NextResponse(audioBuffer, {
-      headers: {
-        'Content-Type': 'audio/mpeg',
-        'Content-Length': audioBuffer.byteLength.toString(),
-      },
+    return new Response(audioBuffer, {
+      headers: { 'Content-Type': 'audio/mpeg' },
     });
   } catch (e) {
     return NextResponse.json(

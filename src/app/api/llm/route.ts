@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Vercel Hobby plan: max 10s. Pro plan: up to 60s.
-// Keep at 10 for Hobby compatibility. LLM calls must be fast (gpt-4o-mini).
-export const maxDuration = 10;
+// Edge runtime = 300s streaming on Vercel Hobby (vs 10s serverless)
+export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -16,9 +15,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000); // 25s timeout
+    const useStreaming = body.stream === true;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -32,11 +29,9 @@ export async function POST(req: NextRequest) {
         temperature: body.temperature ?? 0.7,
         max_tokens: body.max_tokens ?? 2000,
         response_format: body.response_format,
+        stream: useStreaming,
       }),
-      signal: controller.signal,
     });
-
-    clearTimeout(timeout);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -46,15 +41,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Streaming: pipe OpenAI SSE stream directly to client (300s window)
+    if (useStreaming && response.body) {
+      return new Response(response.body, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      });
+    }
+
+    // Non-streaming: return JSON (for exercise generation)
     const data = await response.json();
     return NextResponse.json(data);
   } catch (e) {
-    if (e instanceof Error && e.name === 'AbortError') {
-      return NextResponse.json(
-        { error: 'LLM request timed out after 25s' },
-        { status: 504 }
-      );
-    }
     return NextResponse.json(
       { error: e instanceof Error ? e.message : 'Unknown error' },
       { status: 500 }

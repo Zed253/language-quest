@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// First 20 words inlined for fast seed. Full seed done via script.
+export const runtime = 'edge';
+
+// First 50 words inlined for seed.
 const SEED_WORDS = [
   { word_l2: "de", word_l1: "de", example_sentence: "El libro es de María.", frequency_rank: 1 },
   { word_l2: "la", word_l1: "la", example_sentence: "La casa es grande.", frequency_rank: 2 },

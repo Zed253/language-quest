@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -9,30 +11,23 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File;
-
     if (!file) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
     }
 
-    // Forward to Whisper API
     const whisperForm = new FormData();
     whisperForm.append('file', file, 'recording.webm');
     whisperForm.append('model', 'whisper-1');
 
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-      },
+      headers: { 'Authorization': `Bearer ${apiKey}` },
       body: whisperForm,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json(
-        { error: `Whisper API error: ${response.status}`, details: errorText },
-        { status: response.status }
-      );
+      return NextResponse.json({ error: errorText }, { status: response.status });
     }
 
     const data = await response.json();
