@@ -32,13 +32,23 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen bg-background p-8">
       <div className="max-w-2xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            Language Quest
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Your daily Spanish training awaits.
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">
+              Language Quest
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Your daily Spanish training awaits.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link href="/crew">
+              <Button variant="outline" size="sm">Crew</Button>
+            </Link>
+            <Link href="/onboarding">
+              <Button variant="outline" size="sm">Profile</Button>
+            </Link>
+          </div>
         </div>
 
         {loading ? (
