@@ -45,7 +45,7 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     set({ isLoading: true, error: null, phase: 'idle' });
 
     const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('SESSION_TIMEOUT')), 15000)
+      setTimeout(() => reject(new Error('SESSION_TIMEOUT')), 30000)
     );
 
     let result;
