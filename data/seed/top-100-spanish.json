@@ -1,0 +1,602 @@
+[
+  {
+    "word_l2": "de",
+    "word_l1": "de",
+    "example_sentence": "El libro es de María.",
+    "frequency_rank": 1
+  },
+  {
+    "word_l2": "la",
+    "word_l1": "la",
+    "example_sentence": "La casa es grande.",
+    "frequency_rank": 2
+  },
+  {
+    "word_l2": "que",
+    "word_l1": "que",
+    "example_sentence": "Creo que es bueno.",
+    "frequency_rank": 3
+  },
+  {
+    "word_l2": "el",
+    "word_l1": "le",
+    "example_sentence": "El gato duerme en la cama.",
+    "frequency_rank": 4
+  },
+  {
+    "word_l2": "en",
+    "word_l1": "dans / en",
+    "example_sentence": "Vivo en una ciudad pequeña.",
+    "frequency_rank": 5
+  },
+  {
+    "word_l2": "y",
+    "word_l1": "et",
+    "example_sentence": "Tengo un perro y un gato.",
+    "frequency_rank": 6
+  },
+  {
+    "word_l2": "a",
+    "word_l1": "à",
+    "example_sentence": "Voy a la escuela.",
+    "frequency_rank": 7
+  },
+  {
+    "word_l2": "los",
+    "word_l1": "les (masc.)",
+    "example_sentence": "Los niños juegan en el parque.",
+    "frequency_rank": 8
+  },
+  {
+    "word_l2": "no",
+    "word_l1": "non / ne...pas",
+    "example_sentence": "No tengo hambre.",
+    "frequency_rank": 9
+  },
+  {
+    "word_l2": "un",
+    "word_l1": "un",
+    "example_sentence": "Quiero un vaso de agua.",
+    "frequency_rank": 10
+  },
+  {
+    "word_l2": "ser",
+    "word_l1": "être (essence)",
+    "example_sentence": "Quiero ser médico.",
+    "frequency_rank": 11
+  },
+  {
+    "word_l2": "es",
+    "word_l1": "est / c'est",
+    "example_sentence": "Ella es mi amiga.",
+    "frequency_rank": 12
+  },
+  {
+    "word_l2": "se",
+    "word_l1": "se",
+    "example_sentence": "Él se llama Pedro.",
+    "frequency_rank": 13
+  },
+  {
+    "word_l2": "lo",
+    "word_l1": "le / ce",
+    "example_sentence": "No lo sé.",
+    "frequency_rank": 14
+  },
+  {
+    "word_l2": "por",
+    "word_l1": "par / pour",
+    "example_sentence": "Gracias por tu ayuda.",
+    "frequency_rank": 15
+  },
+  {
+    "word_l2": "con",
+    "word_l1": "avec",
+    "example_sentence": "Voy con mi hermano.",
+    "frequency_rank": 16
+  },
+  {
+    "word_l2": "una",
+    "word_l1": "une",
+    "example_sentence": "Tengo una pregunta.",
+    "frequency_rank": 17
+  },
+  {
+    "word_l2": "su",
+    "word_l1": "son / sa",
+    "example_sentence": "Su casa es bonita.",
+    "frequency_rank": 18
+  },
+  {
+    "word_l2": "para",
+    "word_l1": "pour",
+    "example_sentence": "Este regalo es para ti.",
+    "frequency_rank": 19
+  },
+  {
+    "word_l2": "las",
+    "word_l1": "les (fém.)",
+    "example_sentence": "Las flores son rojas.",
+    "frequency_rank": 20
+  },
+  {
+    "word_l2": "me",
+    "word_l1": "me / moi",
+    "example_sentence": "Me gusta la música.",
+    "frequency_rank": 21
+  },
+  {
+    "word_l2": "al",
+    "word_l1": "au",
+    "example_sentence": "Voy al mercado.",
+    "frequency_rank": 22
+  },
+  {
+    "word_l2": "pero",
+    "word_l1": "mais",
+    "example_sentence": "Quiero ir, pero no puedo.",
+    "frequency_rank": 23
+  },
+  {
+    "word_l2": "yo",
+    "word_l1": "je / moi",
+    "example_sentence": "Yo vivo en Madrid.",
+    "frequency_rank": 24
+  },
+  {
+    "word_l2": "si",
+    "word_l1": "si",
+    "example_sentence": "Si quieres, podemos ir juntos.",
+    "frequency_rank": 25
+  },
+  {
+    "word_l2": "más",
+    "word_l1": "plus",
+    "example_sentence": "Quiero más agua, por favor.",
+    "frequency_rank": 26
+  },
+  {
+    "word_l2": "este",
+    "word_l1": "ce / celui-ci",
+    "example_sentence": "Este libro es interesante.",
+    "frequency_rank": 27
+  },
+  {
+    "word_l2": "ya",
+    "word_l1": "déjà",
+    "example_sentence": "Ya he comido.",
+    "frequency_rank": 28
+  },
+  {
+    "word_l2": "todo",
+    "word_l1": "tout",
+    "example_sentence": "Todo está bien.",
+    "frequency_rank": 29
+  },
+  {
+    "word_l2": "esta",
+    "word_l1": "cette / celle-ci",
+    "example_sentence": "Esta mesa es nueva.",
+    "frequency_rank": 30
+  },
+  {
+    "word_l2": "también",
+    "word_l1": "aussi",
+    "example_sentence": "Yo también quiero ir.",
+    "frequency_rank": 31
+  },
+  {
+    "word_l2": "cuando",
+    "word_l1": "quand",
+    "example_sentence": "Cuando llueve, me quedo en casa.",
+    "frequency_rank": 32
+  },
+  {
+    "word_l2": "hay",
+    "word_l1": "il y a",
+    "example_sentence": "Hay mucha gente en la calle.",
+    "frequency_rank": 33
+  },
+  {
+    "word_l2": "muy",
+    "word_l1": "très",
+    "example_sentence": "La sopa está muy caliente.",
+    "frequency_rank": 34
+  },
+  {
+    "word_l2": "le",
+    "word_l1": "lui",
+    "example_sentence": "Le doy el libro a mi amigo.",
+    "frequency_rank": 35
+  },
+  {
+    "word_l2": "o",
+    "word_l1": "ou",
+    "example_sentence": "¿Quieres té o café?",
+    "frequency_rank": 36
+  },
+  {
+    "word_l2": "mi",
+    "word_l1": "mon / ma",
+    "example_sentence": "Mi hermana vive en Barcelona.",
+    "frequency_rank": 37
+  },
+  {
+    "word_l2": "ha",
+    "word_l1": "a (auxiliaire)",
+    "example_sentence": "Ella ha llegado temprano.",
+    "frequency_rank": 38
+  },
+  {
+    "word_l2": "del",
+    "word_l1": "du",
+    "example_sentence": "El nombre del perro es Luna.",
+    "frequency_rank": 39
+  },
+  {
+    "word_l2": "otro",
+    "word_l1": "autre",
+    "example_sentence": "Quiero otro café, por favor.",
+    "frequency_rank": 40
+  },
+  {
+    "word_l2": "ella",
+    "word_l1": "elle",
+    "example_sentence": "Ella trabaja en un hospital.",
+    "frequency_rank": 41
+  },
+  {
+    "word_l2": "nos",
+    "word_l1": "nous",
+    "example_sentence": "Nos vemos mañana.",
+    "frequency_rank": 42
+  },
+  {
+    "word_l2": "ni",
+    "word_l1": "ni",
+    "example_sentence": "No quiero ni agua ni café.",
+    "frequency_rank": 43
+  },
+  {
+    "word_l2": "estar",
+    "word_l1": "être (état)",
+    "example_sentence": "Voy a estar en casa todo el día.",
+    "frequency_rank": 44
+  },
+  {
+    "word_l2": "tener",
+    "word_l1": "avoir",
+    "example_sentence": "Voy a tener un examen mañana.",
+    "frequency_rank": 45
+  },
+  {
+    "word_l2": "donde",
+    "word_l1": "où",
+    "example_sentence": "¿Donde está el baño?",
+    "frequency_rank": 46
+  },
+  {
+    "word_l2": "bien",
+    "word_l1": "bien",
+    "example_sentence": "Estoy muy bien, gracias.",
+    "frequency_rank": 47
+  },
+  {
+    "word_l2": "tiempo",
+    "word_l1": "temps",
+    "example_sentence": "No tengo mucho tiempo hoy.",
+    "frequency_rank": 48
+  },
+  {
+    "word_l2": "mismo",
+    "word_l1": "même",
+    "example_sentence": "Vivimos en el mismo edificio.",
+    "frequency_rank": 49
+  },
+  {
+    "word_l2": "ese",
+    "word_l1": "ce / celui-là",
+    "example_sentence": "Ese coche es muy rápido.",
+    "frequency_rank": 50
+  },
+  {
+    "word_l2": "ahora",
+    "word_l1": "maintenant",
+    "example_sentence": "Ahora voy a comer.",
+    "frequency_rank": 51
+  },
+  {
+    "word_l2": "entre",
+    "word_l1": "entre",
+    "example_sentence": "El gato está entre las cajas.",
+    "frequency_rank": 52
+  },
+  {
+    "word_l2": "hacer",
+    "word_l1": "faire",
+    "example_sentence": "Voy a hacer la cena.",
+    "frequency_rank": 53
+  },
+  {
+    "word_l2": "cosa",
+    "word_l1": "chose",
+    "example_sentence": "Tengo una cosa importante que decir.",
+    "frequency_rank": 54
+  },
+  {
+    "word_l2": "grande",
+    "word_l1": "grand(e)",
+    "example_sentence": "Mi ciudad es muy grande.",
+    "frequency_rank": 55
+  },
+  {
+    "word_l2": "así",
+    "word_l1": "ainsi / comme ça",
+    "example_sentence": "No me gusta hacer las cosas así.",
+    "frequency_rank": 56
+  },
+  {
+    "word_l2": "aquí",
+    "word_l1": "ici",
+    "example_sentence": "Ven aquí, por favor.",
+    "frequency_rank": 57
+  },
+  {
+    "word_l2": "mucho",
+    "word_l1": "beaucoup",
+    "example_sentence": "Te quiero mucho.",
+    "frequency_rank": 58
+  },
+  {
+    "word_l2": "ir",
+    "word_l1": "aller",
+    "example_sentence": "Quiero ir al cine esta noche.",
+    "frequency_rank": 59
+  },
+  {
+    "word_l2": "poder",
+    "word_l1": "pouvoir",
+    "example_sentence": "¿Puedes ayudarme mañana?",
+    "frequency_rank": 60
+  },
+  {
+    "word_l2": "decir",
+    "word_l1": "dire",
+    "example_sentence": "Quiero decir algo importante.",
+    "frequency_rank": 61
+  },
+  {
+    "word_l2": "bueno",
+    "word_l1": "bon",
+    "example_sentence": "Este restaurante es muy bueno.",
+    "frequency_rank": 62
+  },
+  {
+    "word_l2": "él",
+    "word_l1": "il / lui",
+    "example_sentence": "Él vive cerca de mi casa.",
+    "frequency_rank": 63
+  },
+  {
+    "word_l2": "porque",
+    "word_l1": "parce que",
+    "example_sentence": "No voy porque estoy cansado.",
+    "frequency_rank": 64
+  },
+  {
+    "word_l2": "te",
+    "word_l1": "te / toi",
+    "example_sentence": "Te llamo mañana.",
+    "frequency_rank": 65
+  },
+  {
+    "word_l2": "día",
+    "word_l1": "jour",
+    "example_sentence": "Hoy es un buen día.",
+    "frequency_rank": 66
+  },
+  {
+    "word_l2": "hasta",
+    "word_l1": "jusqu'à",
+    "example_sentence": "Trabajo hasta las cinco.",
+    "frequency_rank": 67
+  },
+  {
+    "word_l2": "sin",
+    "word_l1": "sans",
+    "example_sentence": "Café sin azúcar, por favor.",
+    "frequency_rank": 68
+  },
+  {
+    "word_l2": "nosotros",
+    "word_l1": "nous",
+    "example_sentence": "Nosotros vivimos en París.",
+    "frequency_rank": 69
+  },
+  {
+    "word_l2": "saber",
+    "word_l1": "savoir",
+    "example_sentence": "No sé hablar alemán.",
+    "frequency_rank": 70
+  },
+  {
+    "word_l2": "querer",
+    "word_l1": "vouloir / aimer",
+    "example_sentence": "Quiero aprender español.",
+    "frequency_rank": 71
+  },
+  {
+    "word_l2": "dar",
+    "word_l1": "donner",
+    "example_sentence": "Voy a dar un paseo.",
+    "frequency_rank": 72
+  },
+  {
+    "word_l2": "ver",
+    "word_l1": "voir",
+    "example_sentence": "Quiero ver esa película.",
+    "frequency_rank": 73
+  },
+  {
+    "word_l2": "sobre",
+    "word_l1": "sur / au sujet de",
+    "example_sentence": "El libro está sobre la mesa.",
+    "frequency_rank": 74
+  },
+  {
+    "word_l2": "hombre",
+    "word_l1": "homme",
+    "example_sentence": "Ese hombre es mi vecino.",
+    "frequency_rank": 75
+  },
+  {
+    "word_l2": "poco",
+    "word_l1": "peu",
+    "example_sentence": "Hablo un poco de español.",
+    "frequency_rank": 76
+  },
+  {
+    "word_l2": "después",
+    "word_l1": "après",
+    "example_sentence": "Después de comer, voy a dormir.",
+    "frequency_rank": 77
+  },
+  {
+    "word_l2": "nuevo",
+    "word_l1": "nouveau",
+    "example_sentence": "Tengo un teléfono nuevo.",
+    "frequency_rank": 78
+  },
+  {
+    "word_l2": "hablar",
+    "word_l1": "parler",
+    "example_sentence": "¿Puedes hablar más despacio?",
+    "frequency_rank": 79
+  },
+  {
+    "word_l2": "tan",
+    "word_l1": "si / tellement",
+    "example_sentence": "No es tan difícil.",
+    "frequency_rank": 80
+  },
+  {
+    "word_l2": "nada",
+    "word_l1": "rien",
+    "example_sentence": "No quiero nada, gracias.",
+    "frequency_rank": 81
+  },
+  {
+    "word_l2": "cada",
+    "word_l1": "chaque",
+    "example_sentence": "Cada día aprendo algo nuevo.",
+    "frequency_rank": 82
+  },
+  {
+    "word_l2": "vida",
+    "word_l1": "vie",
+    "example_sentence": "La vida es corta.",
+    "frequency_rank": 83
+  },
+  {
+    "word_l2": "mujer",
+    "word_l1": "femme",
+    "example_sentence": "Esa mujer es profesora.",
+    "frequency_rank": 84
+  },
+  {
+    "word_l2": "mejor",
+    "word_l1": "meilleur / mieux",
+    "example_sentence": "Esta es la mejor opción.",
+    "frequency_rank": 85
+  },
+  {
+    "word_l2": "casa",
+    "word_l1": "maison",
+    "example_sentence": "Voy a mi casa.",
+    "frequency_rank": 86
+  },
+  {
+    "word_l2": "entonces",
+    "word_l1": "alors / donc",
+    "example_sentence": "Entonces, ¿qué hacemos?",
+    "frequency_rank": 87
+  },
+  {
+    "word_l2": "antes",
+    "word_l1": "avant",
+    "example_sentence": "Llámame antes de venir.",
+    "frequency_rank": 88
+  },
+  {
+    "word_l2": "siempre",
+    "word_l1": "toujours",
+    "example_sentence": "Siempre desayuno a las ocho.",
+    "frequency_rank": 89
+  },
+  {
+    "word_l2": "comer",
+    "word_l1": "manger",
+    "example_sentence": "Vamos a comer juntos.",
+    "frequency_rank": 90
+  },
+  {
+    "word_l2": "agua",
+    "word_l1": "eau",
+    "example_sentence": "Quiero un vaso de agua.",
+    "frequency_rank": 91
+  },
+  {
+    "word_l2": "nunca",
+    "word_l1": "jamais",
+    "example_sentence": "Nunca he estado en México.",
+    "frequency_rank": 92
+  },
+  {
+    "word_l2": "beber",
+    "word_l1": "boire",
+    "example_sentence": "¿Quieres beber algo?",
+    "frequency_rank": 93
+  },
+  {
+    "word_l2": "pequeño",
+    "word_l1": "petit",
+    "example_sentence": "Mi perro es muy pequeño.",
+    "frequency_rank": 94
+  },
+  {
+    "word_l2": "mundo",
+    "word_l1": "monde",
+    "example_sentence": "El mundo es muy grande.",
+    "frequency_rank": 95
+  },
+  {
+    "word_l2": "trabajo",
+    "word_l1": "travail",
+    "example_sentence": "Mi trabajo empieza a las nueve.",
+    "frequency_rank": 96
+  },
+  {
+    "word_l2": "desde",
+    "word_l1": "depuis",
+    "example_sentence": "Vivo aquí desde hace dos años.",
+    "frequency_rank": 97
+  },
+  {
+    "word_l2": "nombre",
+    "word_l1": "nom / prénom",
+    "example_sentence": "¿Cuál es tu nombre?",
+    "frequency_rank": 98
+  },
+  {
+    "word_l2": "bajo",
+    "word_l1": "sous / bas",
+    "example_sentence": "El gato está bajo la mesa.",
+    "frequency_rank": 99
+  },
+  {
+    "word_l2": "calle",
+    "word_l1": "rue",
+    "example_sentence": "Vivo en una calle tranquila.",
+    "frequency_rank": 100
+  }
+]
