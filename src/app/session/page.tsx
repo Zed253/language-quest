@@ -25,7 +25,7 @@ function SessionPageInner() {
   const {
     plan,
     currentExercise,
-    currentPhase,
+    currentPhaseKey,
     overallProgress,
     isLoading,
     error,
@@ -183,14 +183,14 @@ function SessionPageInner() {
           <ProgressBar progress={overallProgress} />
 
           <div className="text-xs uppercase tracking-wider text-muted-foreground">
-            {currentPhase} &middot; {exercise?.type || 'flashcard'}
+            {currentPhaseKey} &middot; {exercise?.type || 'flashcard'}
           </div>
 
           {/* FSRS Card (flashcard from warm-up) */}
           {card && !exercise && (
             <FlashcardExercise
               card={card}
-              onGrade={(rating) => submitAnswer(String(rating))}
+              onGrade={(rating) => submitAnswer(user!.id, String(rating))}
               isLoading={isLoading}
             />
           )}
@@ -202,7 +202,7 @@ function SessionPageInner() {
               userInput={userInput}
               setUserInput={setUserInput}
               onSubmit={() => {
-                submitAnswer(userInput);
+                submitAnswer(user!.id, userInput);
                 setUserInput('');
               }}
               isLoading={isLoading}
