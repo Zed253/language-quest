@@ -246,29 +246,63 @@ export function ChatStream({
           <Button
             variant={isRecording ? 'default' : 'outline'}
             onClick={async () => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const w = window as any;
+
               if (isRecording) {
+                // STOP: user presses again to stop (push-to-talk)
                 setIsRecording(false);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const w = window as any;
-                w._speechRec?.stop();
+                if (w._speechRec) {
+                  w._speechRec.stop();
+                  w._speechRec = null;
+                }
               } else {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const w = window as any;
+                // START: begin recording
                 const SpeechRecAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
-                if (!SpeechRecAPI) { alert('Reconnaissance vocale non supportee dans ce navigateur'); return; }
+                if (!SpeechRecAPI) { alert('Reconnaissance vocale non supportee'); return; }
+
                 const recognition = new SpeechRecAPI();
-                recognition.lang = ''; // Auto-detect language (works for both FR and ES)
-                recognition.continuous = false;
-                recognition.interimResults = true;
+                // Use fr-FR as primary (user's native language)
+                // Web Speech API will still pick up Spanish words in context
+                recognition.lang = 'fr-FR';
+                recognition.continuous = true;        // DON'T stop on pause
+                recognition.interimResults = true;     // Show as you speak
+                recognition.maxAlternatives = 1;
                 w._speechRec = recognition;
+
+                let fullTranscript = '';
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 recognition.onresult = (event: any) => {
-                  const transcript = event.results[0]?.[0]?.transcript || '';
-                  setInput(transcript);
+                  let interim = '';
+                  let final = '';
+                  for (let i = 0; i < event.results.length; i++) {
+                    const result = event.results[i];
+                    if (result.isFinal) {
+                      final += result[0].transcript + ' ';
+                    } else {
+                      interim += result[0].transcript;
+                    }
+                  }
+                  fullTranscript = final;
+                  // Show final + current interim in input
+                  setInput((fullTranscript + interim).trim());
                 };
-                recognition.onend = () => setIsRecording(false);
-                recognition.onerror = () => setIsRecording(false);
+
+                // Only stop when USER clicks stop (not on pause/silence)
+                recognition.onend = () => {
+                  // If still supposed to be recording, restart (browser stops after silence)
+                  if (w._speechRec === recognition) {
+                    try { recognition.start(); } catch { setIsRecording(false); }
+                  }
+                };
+                recognition.onerror = (e: any) => {
+                  if (e.error !== 'no-speech' && e.error !== 'aborted') {
+                    setIsRecording(false);
+                    w._speechRec = null;
+                  }
+                };
+
                 recognition.start();
                 setIsRecording(true);
               }

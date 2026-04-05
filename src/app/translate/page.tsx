@@ -160,7 +160,7 @@ RULES:
           >
             {loading ? 'Traduciendo...' : '🔄 Traducir'}
           </Button>
-          <MicButton onTranscript={(text) => setInput(prev => prev ? prev + ' ' + text : text)} />
+          <MicButton onTranscript={(text) => setInput(text)} />
         </div>
 
         {/* Output */}
@@ -231,29 +231,56 @@ function MicButton({ onTranscript }: { onTranscript: (text: string) => void }) {
   const [recording, setRecording] = useState(false);
 
   const toggle = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as any;
+
     if (recording) {
+      // STOP recording (push-to-talk: user presses again)
       setRecording(false);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const w = window as any;
-      w._translateSpeechRec?.stop();
+      if (w._translateSpeechRec) {
+        w._translateSpeechRec.stop();
+        w._translateSpeechRec = null;
+      }
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const w = window as any;
+      // START recording
       const SpeechRecAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
       if (!SpeechRecAPI) { alert('Reconnaissance vocale non supportee'); return; }
       const recognition = new SpeechRecAPI();
-      recognition.lang = ''; // Auto-detect
-      recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.lang = 'fr-FR'; // Primary: French (user's native)
+      recognition.continuous = true;       // Don't stop on pause
+      recognition.interimResults = true;
       w._translateSpeechRec = recognition;
+
+      let fullTranscript = '';
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       recognition.onresult = (event: any) => {
-        const transcript = event.results[0]?.[0]?.transcript || '';
-        onTranscript(transcript);
+        let final = '';
+        let interim = '';
+        for (let i = 0; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            final += event.results[i][0].transcript + ' ';
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        fullTranscript = final;
+        onTranscript((fullTranscript + interim).trim());
       };
-      recognition.onend = () => setRecording(false);
-      recognition.onerror = () => setRecording(false);
+
+      recognition.onend = () => {
+        if (w._translateSpeechRec === recognition) {
+          try { recognition.start(); } catch { setRecording(false); }
+        }
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      recognition.onerror = (e: any) => {
+        if (e.error !== 'no-speech' && e.error !== 'aborted') {
+          setRecording(false);
+          w._translateSpeechRec = null;
+        }
+      };
+
       recognition.start();
       setRecording(true);
     }
