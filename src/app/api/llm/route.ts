@@ -8,10 +8,13 @@ export async function POST(req: NextRequest) {
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'OPENAI_API_KEY not configured' },
+      { error: 'OPENAI_API_KEY not configured. Check Vercel environment variables.' },
       { status: 500 }
     );
   }
+
+  // Log to help debug (visible in Vercel Function logs)
+  console.log('[LLM] API key present:', !!apiKey, 'length:', apiKey.length);
 
   try {
     const body = await req.json();

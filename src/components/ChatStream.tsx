@@ -64,8 +64,12 @@ export function ChatStream({
         }),
       });
 
-      if (!response.ok || !response.body) {
-        throw new Error('Stream failed');
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`API error ${response.status}: ${errorData}`);
+      }
+      if (!response.body) {
+        throw new Error('No response body (streaming not supported)');
       }
 
       const reader = response.body.getReader();
@@ -100,11 +104,13 @@ export function ChatStream({
         }
       }
     } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      console.error('[Chat] Error:', errorMsg);
       setMessages(prev => {
         const updated = [...prev];
         updated[updated.length - 1] = {
           role: 'assistant',
-          content: 'Lo siento, hubo un error. Intenta de nuevo.',
+          content: `Error: ${errorMsg}\n\nIntenta de nuevo o verifica la clave API.`,
         };
         return updated;
       });
