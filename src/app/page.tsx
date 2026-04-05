@@ -77,68 +77,101 @@ export default function Dashboard() {
           }} />
         ) : stats ? (
           <>
-            {/* Stats grid */}
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <StatCard label="Due Today" value={stats.due} highlight />
-              <StatCard label="Total Cards" value={stats.total} />
-              <StatCard label="Learning" value={stats.learning} />
-              <StatCard label="Mastered" value={stats.mastered} />
-            </div>
+            {/* Adventure Map */}
+            <div className="rounded-2xl border-2 p-6 bg-gradient-to-b from-blue-50 to-amber-50 dark:from-blue-950 dark:to-amber-950 animate-fade-in">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-bold text-lg">🗺️ Grand Line</h2>
+                <span className="text-sm text-muted-foreground">Phase 1 : East Blue</span>
+              </div>
 
-            {/* Main actions */}
-            <div className="space-y-3">
-              <Link href="/session">
-                <Button size="lg" className="w-full text-lg py-8 animate-pulse-glow font-bold tracking-wide">
-                  ⚓ Start Today&apos;s Session
-                </Button>
-              </Link>
+              {/* Islands / Meso-cycles */}
+              <div className="relative">
+                {/* Path line */}
+                <div className="absolute top-8 left-4 right-4 h-1 bg-primary/20 rounded-full" />
 
-              <div className="grid grid-cols-2 gap-3">
-                <Link href="/translate">
-                  <Button variant="outline" className="w-full py-6 text-lg">
-                    🔄 Traduire
-                    <br/>
-                    <span className="text-xs text-muted-foreground">Rapide, copier-coller</span>
-                  </Button>
-                </Link>
-                <Link href="/chat">
-                  <Button variant="outline" className="w-full py-6 text-lg">
-                    👨‍🍳 Mentor
-                    <br/>
-                    <span className="text-xs text-muted-foreground">Apprendre, discuter</span>
-                  </Button>
-                </Link>
+                <div className="flex justify-between relative">
+                  {[
+                    { name: 'Se presenter', island: 'Shells Town', weeks: '1-3', active: true },
+                    { name: 'Vie quotidienne', island: 'Orange Town', weeks: '4-6', locked: false },
+                    { name: 'Nourriture', island: 'Baratie', weeks: '7-8', locked: true },
+                  ].map((stop, i) => (
+                    <div key={i} className="flex flex-col items-center text-center z-10">
+                      <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl border-3 transition-all ${
+                        stop.active
+                          ? 'bg-primary text-white border-primary scale-110 animate-pulse-glow'
+                          : stop.locked
+                            ? 'bg-muted text-muted-foreground border-muted'
+                            : 'bg-white text-foreground border-primary/50'
+                      }`}>
+                        {stop.active ? '🚢' : stop.locked ? '🔒' : '🏝️'}
+                      </div>
+                      <span className={`text-xs mt-2 font-medium ${stop.active ? 'text-primary' : stop.locked ? 'text-muted-foreground' : ''}`}>
+                        {stop.island}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{stop.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Quick actions */}
+            {/* Stats compact */}
+            <div className="grid grid-cols-4 gap-2">
+              <StatCard label="A revoir" value={stats.due} highlight />
+              <StatCard label="Total" value={stats.total} />
+              <StatCard label="En cours" value={stats.learning} />
+              <StatCard label="Maitrises" value={stats.mastered} />
+            </div>
+
+            {/* Session CTA */}
+            <Link href="/session">
+              <Button size="lg" className="w-full text-lg py-8 animate-pulse-glow font-bold tracking-wide">
+                ⚓ Commencer la session du jour
+              </Button>
+            </Link>
+
+            {/* Two main tools */}
             <div className="grid grid-cols-2 gap-3">
-              {stats.due > 0 && (
-                <Link href="/snack">
-                  <Button variant="outline" className="w-full py-4">
-                    &#9889; Snack Mode<br/>
-                    <span className="text-xs text-muted-foreground">5 cards, 60 sec</span>
-                  </Button>
-                </Link>
-              )}
-              {stats.due > 0 && (
-                <Link href="/review">
-                  <Button variant="outline" className="w-full py-4">
-                    &#128218; Full Review<br/>
-                    <span className="text-xs text-muted-foreground">{stats.due} cards due</span>
-                  </Button>
-                </Link>
-              )}
+              <Link href="/translate">
+                <Button variant="outline" className="w-full py-5">
+                  <div className="text-center">
+                    <div className="text-2xl mb-1">🔄</div>
+                    <div className="font-bold">Traduire</div>
+                    <div className="text-xs text-muted-foreground">Rapide</div>
+                  </div>
+                </Button>
+              </Link>
+              <Link href="/chat">
+                <Button variant="outline" className="w-full py-5">
+                  <div className="text-center">
+                    <div className="text-2xl mb-1">👨‍🍳</div>
+                    <div className="font-bold">Mentor</div>
+                    <div className="text-xs text-muted-foreground">Apprendre</div>
+                  </div>
+                </Button>
+              </Link>
+            </div>
+
+            {/* Quick actions */}
+            <div className="grid grid-cols-4 gap-2">
+              <Link href="/snack">
+                <Button variant="outline" className="w-full py-3 text-xs">
+                  ⚡ Snack
+                </Button>
+              </Link>
+              <Link href="/review">
+                <Button variant="outline" className="w-full py-3 text-xs">
+                  📚 Reviser
+                </Button>
+              </Link>
               <Link href="/countdown">
-                <Button variant="outline" className="w-full py-4">
-                  &#127758; Countdowns<br/>
-                  <span className="text-xs text-muted-foreground">Real deadlines</span>
+                <Button variant="outline" className="w-full py-3 text-xs">
+                  🌍 Compte
                 </Button>
               </Link>
               <Link href="/crew">
-                <Button variant="outline" className="w-full py-4">
-                  &#128101; Crew<br/>
-                  <span className="text-xs text-muted-foreground">Partner & quests</span>
+                <Button variant="outline" className="w-full py-3 text-xs">
+                  👥 Crew
                 </Button>
               </Link>
             </div>
@@ -147,8 +180,8 @@ export default function Dashboard() {
             {stats.total > 0 && (
               <div>
                 <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                  <span>Mastery Progress</span>
-                  <span>{stats.mastered} / {stats.total} mastered</span>
+                  <span>Progression</span>
+                  <span>{stats.mastered} / {stats.total} maitrises</span>
                 </div>
                 <div className="h-3 bg-muted rounded-full overflow-hidden">
                   <div
