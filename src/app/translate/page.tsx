@@ -229,45 +229,34 @@ RULES:
 
 function MicButton({ onTranscript }: { onTranscript: (text: string) => void }) {
   const [recording, setRecording] = useState(false);
+  const [lang, setLang] = useState<'fr' | 'es'>('fr');
 
   const toggle = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const w = window as any;
 
     if (recording) {
-      // STOP recording (push-to-talk: user presses again)
       setRecording(false);
-      if (w._translateSpeechRec) {
-        w._translateSpeechRec.stop();
-        w._translateSpeechRec = null;
-      }
+      if (w._translateSpeechRec) { w._translateSpeechRec.stop(); w._translateSpeechRec = null; }
     } else {
-      // START recording
       const SpeechRecAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
       if (!SpeechRecAPI) { alert('Reconnaissance vocale non supportee'); return; }
       const recognition = new SpeechRecAPI();
-      recognition.lang = 'fr-FR'; // Primary: French (user's native)
-      recognition.continuous = true;       // Don't stop on pause
+      recognition.lang = lang === 'fr' ? 'fr-FR' : 'es-ES';
+      recognition.continuous = true;
       recognition.interimResults = true;
       w._translateSpeechRec = recognition;
-
       let fullTranscript = '';
-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       recognition.onresult = (event: any) => {
-        let final = '';
-        let interim = '';
+        let final = '', interim = '';
         for (let i = 0; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            final += event.results[i][0].transcript + ' ';
-          } else {
-            interim += event.results[i][0].transcript;
-          }
+          if (event.results[i].isFinal) final += event.results[i][0].transcript + ' ';
+          else interim += event.results[i][0].transcript;
         }
         fullTranscript = final;
         onTranscript((fullTranscript + interim).trim());
       };
-
       recognition.onend = () => {
         if (w._translateSpeechRec === recognition) {
           try { recognition.start(); } catch { setRecording(false); }
@@ -276,24 +265,42 @@ function MicButton({ onTranscript }: { onTranscript: (text: string) => void }) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       recognition.onerror = (e: any) => {
         if (e.error !== 'no-speech' && e.error !== 'aborted') {
-          setRecording(false);
-          w._translateSpeechRec = null;
+          setRecording(false); w._translateSpeechRec = null;
         }
       };
-
       recognition.start();
       setRecording(true);
     }
   };
 
   return (
-    <Button
-      variant={recording ? 'default' : 'outline'}
-      onClick={toggle}
-      className={`py-6 px-6 text-xl ${recording ? 'bg-red-500 hover:bg-red-600 animate-pulse' : ''}`}
-      size="lg"
-    >
-      {recording ? '⏹️' : '🎤'}
-    </Button>
+    <div className="flex gap-1 items-center">
+      <button
+        onClick={() => setLang(lang === 'fr' ? 'es' : 'fr')}
+        className="px-2 py-1 rounded-lg border text-xs font-bold hover:bg-muted transition"
+      >
+        {lang === 'fr' ? 'FR' : 'ES'}
+      </button>
+      <button
+        onClick={toggle}
+        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+          recording
+            ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30'
+            : 'bg-muted hover:bg-muted/80 text-foreground'
+        }`}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {recording ? (
+            <rect x="6" y="6" width="12" height="12" rx="2" />
+          ) : (
+            <>
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <line x1="12" x2="12" y1="19" y2="22" />
+            </>
+          )}
+        </svg>
+      </button>
+    </div>
   );
 }

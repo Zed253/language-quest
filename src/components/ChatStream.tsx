@@ -41,6 +41,7 @@ export function ChatStream({
   const [streaming, setStreaming] = useState(false);
   const [autoSent, setAutoSent] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [micLang, setMicLang] = useState<'fr' | 'es'>('fr');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -242,76 +243,76 @@ export function ChatStream({
             className="flex-1 p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
             autoFocus
           />
-          {/* Mic button */}
-          <Button
-            variant={isRecording ? 'default' : 'outline'}
+          {/* Language toggle for mic */}
+          <button
+            onClick={() => setMicLang(micLang === 'fr' ? 'es' : 'fr')}
+            className="px-2 py-1 rounded-lg border text-xs font-bold hover:bg-muted transition"
+            title={`Micro en ${micLang === 'fr' ? 'francais' : 'espagnol'}. Cliquer pour changer.`}
+          >
+            {micLang === 'fr' ? 'FR' : 'ES'}
+          </button>
+          {/* Mic button -- clean design like Claude/WhatsApp */}
+          <button
             onClick={async () => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const w = window as any;
 
               if (isRecording) {
-                // STOP: user presses again to stop (push-to-talk)
                 setIsRecording(false);
-                if (w._speechRec) {
-                  w._speechRec.stop();
-                  w._speechRec = null;
-                }
+                if (w._speechRec) { w._speechRec.stop(); w._speechRec = null; }
               } else {
-                // START: begin recording
                 const SpeechRecAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
                 if (!SpeechRecAPI) { alert('Reconnaissance vocale non supportee'); return; }
-
                 const recognition = new SpeechRecAPI();
-                // Use fr-FR as primary (user's native language)
-                // Web Speech API will still pick up Spanish words in context
-                recognition.lang = 'fr-FR';
-                recognition.continuous = true;        // DON'T stop on pause
-                recognition.interimResults = true;     // Show as you speak
-                recognition.maxAlternatives = 1;
+                recognition.lang = micLang === 'fr' ? 'fr-FR' : 'es-ES';
+                recognition.continuous = true;
+                recognition.interimResults = true;
                 w._speechRec = recognition;
-
                 let fullTranscript = '';
-
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 recognition.onresult = (event: any) => {
-                  let interim = '';
-                  let final = '';
+                  let final = '', interim = '';
                   for (let i = 0; i < event.results.length; i++) {
-                    const result = event.results[i];
-                    if (result.isFinal) {
-                      final += result[0].transcript + ' ';
-                    } else {
-                      interim += result[0].transcript;
-                    }
+                    if (event.results[i].isFinal) final += event.results[i][0].transcript + ' ';
+                    else interim += event.results[i][0].transcript;
                   }
                   fullTranscript = final;
-                  // Show final + current interim in input
                   setInput((fullTranscript + interim).trim());
                 };
-
-                // Only stop when USER clicks stop (not on pause/silence)
                 recognition.onend = () => {
-                  // If still supposed to be recording, restart (browser stops after silence)
                   if (w._speechRec === recognition) {
                     try { recognition.start(); } catch { setIsRecording(false); }
                   }
                 };
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 recognition.onerror = (e: any) => {
                   if (e.error !== 'no-speech' && e.error !== 'aborted') {
-                    setIsRecording(false);
-                    w._speechRec = null;
+                    setIsRecording(false); w._speechRec = null;
                   }
                 };
-
                 recognition.start();
                 setIsRecording(true);
               }
             }}
-            className={`rounded-xl px-4 ${isRecording ? 'bg-red-500 hover:bg-red-600 animate-pulse' : ''}`}
             disabled={streaming}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+              isRecording
+                ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30'
+                : 'bg-muted hover:bg-muted/80 text-foreground'
+            }`}
           >
-            {isRecording ? '⏹️' : '🎤'}
-          </Button>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {isRecording ? (
+                <rect x="6" y="6" width="12" height="12" rx="2" />
+              ) : (
+                <>
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" x2="12" y1="19" y2="22" />
+                </>
+              )}
+            </svg>
+          </button>
           <Button
             onClick={sendMessage}
             disabled={streaming || !input.trim()}
