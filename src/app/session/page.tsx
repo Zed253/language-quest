@@ -8,9 +8,18 @@ import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { TappableText } from '@/components/TappableText';
 import { PostSessionMessage } from '@/components/PostSessionMessage';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { addCards } from '@/modules/fsrs-engine';
 
-export default function SessionPage() {
+export default function SessionPageWrapper() {
+  return (
+    <ErrorBoundary module="session">
+      <SessionPageInner />
+    </ErrorBoundary>
+  );
+}
+
+function SessionPageInner() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const {

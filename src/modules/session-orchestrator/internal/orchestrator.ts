@@ -6,6 +6,7 @@ import { reviewCard } from '@/modules/fsrs-engine';
 import { eventBus } from '@/modules/event-bus';
 import { getDailyDirective } from '@/modules/periodization-engine';
 import { getUserProfile } from '@/modules/data-layer';
+import { getCharacter, getTraitModifiers } from '@/modules/character-system';
 import type {
   SessionPlan,
   SessionState,
@@ -67,9 +68,19 @@ export async function buildSession(
     const themeId = (userProfile?.theme_id || 'one-piece') as 'one-piece' | 'harry-potter';
     const currentPhase = userProfile?.current_phase || 1;
 
+    // Get character traits for learning modifiers
+    const charResult = await getCharacter(userId);
+    const character = charResult.ok ? charResult.data : null;
+    const modifiers = character ? getTraitModifiers(character.traits) : null;
+
+    // Apply trait modifiers to difficulty
+    const adjustedDifficulty = Math.max(1, Math.min(10,
+      dir.difficultyTarget + (modifiers?.difficultyAdjust || 0)
+    ));
+
     // 1. Get FSRS cards for warm-up (5 cards)
     const cardsResult = await getNextCards(userId, 5);
-    const warmupCards = cardsResult.ok ? cardsResult.data : [];
+    let warmupCards = cardsResult.ok ? cardsResult.data : [];
 
     // 2. Generate exercises + narrative in ONE LLM call
     //    (generateExercises returns narrative_intro + narrative_outro in the response)
@@ -84,7 +95,7 @@ export async function buildSession(
       targetVocabulary: dir.targetVocabulary,
       recentlyLearnedWords: [],
       weakAreas: [],
-      difficultyTarget: dir.difficultyTarget,
+      difficultyTarget: adjustedDifficulty,
       exerciseCount: dir.exerciseCount,
       themeId,
       narrativeContext: dir.narrativeContext,
@@ -104,6 +115,15 @@ export async function buildSession(
     }));
 
     const llmExercises = exercisesResult.ok ? exercisesResult.data.exercises : [];
+
+    // If LLM failed AND no FSRS cards, get more FSRS cards as fallback
+    if (llmExercises.length === 0 && warmupCards.length === 0) {
+      const fallbackCards = await getNextCards(userId, 10);
+      if (fallbackCards.ok) {
+        warmupCards.push(...fallbackCards.data);
+      }
+    }
+
     const mainExercises: SessionExercise[] = llmExercises.slice(0, -1).map((ex) => ({
       id: generateId(),
       source: 'llm' as const,

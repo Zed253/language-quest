@@ -69,6 +69,16 @@ export default function Dashboard() {
 
         {loading ? (
           <div className="text-muted-foreground">Loading...</div>
+        ) : stats && stats.total === 0 ? (
+          /* First time user -- no cards yet */
+          <div className="text-center py-12 rounded-xl border-2 border-dashed space-y-4 animate-fade-in">
+            <div className="text-4xl">&#127758;</div>
+            <h2 className="text-xl font-bold">Welcome aboard!</h2>
+            <p className="text-muted-foreground">Take a quick assessment to calibrate your starting level.</p>
+            <Link href="/assessment">
+              <Button size="lg">Start Assessment</Button>
+            </Link>
+          </div>
         ) : stats ? (
           <>
             {/* Stats grid */}
