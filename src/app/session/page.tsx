@@ -39,6 +39,8 @@ function SessionPageInner() {
     dismissFeedback,
     toggleTranslation,
     reset,
+    stats,
+    currentExerciseIndex,
   } = useSessionStore();
 
   const [userInput, setUserInput] = useState('');
@@ -182,8 +184,13 @@ function SessionPageInner() {
         <div className="max-w-lg mx-auto space-y-6">
           <ProgressBar progress={overallProgress} />
 
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">
-            {currentPhaseKey} &middot; {exercise?.type || 'flashcard'}
+          <div className="flex justify-between items-center">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">
+              {currentPhaseKey === 'warmup' ? 'Echauffement' : currentPhaseKey === 'main' ? 'Entrainement' : 'Defi'}
+            </span>
+            <span className="text-sm font-bold">
+              {stats.completed + 1} / {plan?.totalExercises || '?'}
+            </span>
           </div>
 
           {/* FSRS Card (flashcard from warm-up) */}

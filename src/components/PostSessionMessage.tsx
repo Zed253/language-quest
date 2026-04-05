@@ -76,7 +76,7 @@ export function PostSessionMessage({ userId, targetLanguage, phase, onDone }: Po
     return (
       <div className="space-y-4 animate-fade-in">
         <div className="text-center">
-          <div className="text-3xl mb-2">&#9993;&#65039;</div>
+          <div className="text-3xl mb-2">✉️</div>
           <p className="font-bold">Message sent!</p>
           {correction && (
             <p className="text-sm text-amber-600 mt-2 italic">&#128161; {correction}</p>
@@ -92,9 +92,9 @@ export function PostSessionMessage({ userId, targetLanguage, phase, onDone }: Po
   return (
     <div className="space-y-4 animate-fade-in">
       <div>
-        <p className="font-bold">A word for your partner?</p>
+        <p className="font-bold">Un mot pour ton equipier(e) ?</p>
         <p className="text-sm text-muted-foreground">
-          Write in {targetLanguage === 'es' ? 'Spanish' : 'French'} (+10 Berrys)
+          Ecris en {targetLanguage === 'es' ? 'espagnol' : 'francais'} (+10 Berrys)
         </p>
       </div>
 
@@ -124,10 +124,10 @@ export function PostSessionMessage({ userId, targetLanguage, phase, onDone }: Po
 
       <div className="flex gap-2">
         <Button variant="outline" onClick={onDone} className="flex-1">
-          Skip
+          Passer
         </Button>
         <Button onClick={handleSend} disabled={sending || !message.trim()} className="flex-1">
-          {sending ? 'Sending...' : 'Send &#9993;&#65039;'}
+          {sending ? 'Envoi...' : 'Envoyer ✉️'}
         </Button>
       </div>
     </div>
