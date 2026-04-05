@@ -19,6 +19,8 @@ interface ChatStreamProps {
   placeholder?: string;
   onFlashcardCreate?: (word: string, translation: string, context: string) => void;
   className?: string;
+  initialMessages?: ChatMessage[];
+  onMessagesChange?: (messages: ChatMessage[]) => void;
 }
 
 export function ChatStream({
@@ -26,8 +28,10 @@ export function ChatStream({
   placeholder = 'Escribe algo...',
   onFlashcardCreate,
   className,
+  initialMessages,
+  onMessagesChange,
 }: ChatStreamProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages || []);
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -146,6 +150,13 @@ export function ChatStream({
     } finally {
       setStreaming(false);
       inputRef.current?.focus();
+      // Notify parent that messages changed (for auto-save)
+      if (onMessagesChange) {
+        setMessages(prev => {
+          onMessagesChange(prev);
+          return prev;
+        });
+      }
     }
   };
 

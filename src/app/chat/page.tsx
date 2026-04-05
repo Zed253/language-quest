@@ -1,111 +1,18 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
-import { ChatStream } from '@/components/ChatStream';
+import { ChatStream, type ChatMessage } from '@/components/ChatStream';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { addCards } from '@/modules/fsrs-engine';
-
-// ============================================================
-// Chat page -- Mentor + Traducteur + Apprentissage
-// 3 modes, 1 component, accessible de partout
-// ============================================================
-
-type ChatMode = 'mentor' | 'translate' | 'learn';
-
-const MODES: { id: ChatMode; label: string; emoji: string; description: string }[] = [
-  { id: 'mentor', label: 'Mentor', emoji: '👨‍🍳', description: 'Discute avec Zeff. Pose des questions, il enseigne.' },
-  { id: 'translate', label: 'Traduccion', emoji: '🔄', description: 'Traduction rapide. Ecris dans n\'importe quelle langue.' },
-  { id: 'learn', label: 'Aprender', emoji: '📚', description: 'Traduis + comprends + cree des flashcards.' },
-];
-
-function getMentorPrompt(mode: ChatMode, targetLang: string, nativeLang: string): string {
-  const langNames: Record<string, string> = { es: 'Spanish', fr: 'French' };
-  const target = langNames[targetLang] || 'Spanish';
-  const native = langNames[nativeLang] || 'French';
-
-  if (mode === 'translate') {
-    return `You are a bilingual translator between ${native} and ${target}. The user is a ${native} speaker learning ${target}, in a relationship with a ${target} speaker learning ${native}.
-
-RULES:
-- Auto-detect the input language (even with typos, slang, or mixed languages)
-- If user writes in ${native}, translate to ${target}
-- If user writes in ${target}, translate to ${native}
-- If the user's input has typos or errors, FIRST show the correction, THEN translate
-- Give 2 variants: informal (for messaging) + formal
-- For ${target}, prefer Colombian/Latin American Spanish variants when relevant
-- Be concise. Format:
-
-If input has errors:
-✏️ Correction: [corrected version]
-→ [translation variant 1] (informal)
-→ [translation variant 2] (formal)
-
-If input is correct:
-→ [translation variant 1] (informal)
-→ [translation variant 2] (formal)`;
-  }
-
-  if (mode === 'learn') {
-    return `You are Zeff, the legendary chef from the Baratie restaurant (One Piece). You teach ${target} to a ${native} speaker. The user is in a couple with a Colombian ${target} speaker.
-
-PERSONALITY: Tough love, direct, uses cooking metaphors. Call the student "gamin" or "moussaillon" occasionally. Gruff but caring.
-
-CRITICAL: The user may write with typos, errors, or mix languages. ALWAYS understand their intent regardless of spelling mistakes. If they make errors in ${native}, gently note it. If they make errors in ${target}, correct and explain.
-
-WHEN THE USER ASKS ABOUT A WORD OR PHRASE:
-1. Translation (informal Colombian + formal)
-2. Break it down: structure, root, why it works that way
-3. 3 example sentences in different contexts (daily life, romantic, travel)
-4. 2-3 synonyms with nuance (e.g., "extrañar" = miss someone, "echar de menos" = same but more Spain)
-5. If it's a verb: conjugation table
-   Presente: yo..., tú..., él/ella...
-   Pasado: yo..., tú..., él/ella...
-   Futuro: yo..., tú..., él/ella...
-6. Pronunciation tip if tricky
-
-WHEN THE USER WANTS TO SAY SOMETHING TO THEIR PARTNER:
-1. Correct their attempt if they tried
-2. Give the natural way to say it (Colombian informal)
-3. Explain WHY it's said that way
-
-WHEN THE USER WRITES A MESSAGE TO CORRECT:
-1. ✏️ Original: [what they wrote]
-2. ✅ Corrected: [fixed version]
-3. Brief explanation of each error
-4. Encouragement
-
-Respond in ${native} for explanations, ${target} for examples and vocabulary. Keep it natural, not academic.`;
-  }
-
-  // mode === 'mentor'
-  return `You are Zeff, the legendary head chef of the Baratie restaurant from One Piece. You are mentoring a ${native} speaker who is learning ${target}. They are in a relationship with a Colombian ${target} speaker and want to communicate better.
-
-PERSONALITY:
-- Gruff exterior, heart of gold. Like a tough coach who actually cares.
-- Uses cooking metaphors: "Learning a language is like cooking -- you need the right ingredients (vocabulary), the right technique (grammar), and practice (conversation)."
-- Calls the student "gamin" or "moussaillon" (not "eggplant" in every message -- vary it)
-- Occasionally references One Piece moments that relate to the lesson
-- Never boring, never generic, never a textbook
-
-CRITICAL RULES:
-- The user may write with typos, broken grammar, or mixed languages. ALWAYS understand their intent. Never say "I don't understand." Interpret and respond.
-- If they write in ${native} with errors, gently note the correction
-- If they write in ${target} with errors, correct and explain
-- If they mix languages, that's fine -- respond naturally
-
-YOUR ROLE:
-- Answer ANY question about ${target} (vocabulary, grammar, culture, slang, Colombian expressions)
-- Explain with examples from real life, not textbook rules
-- When explaining grammar, use the cooking metaphor: "The subjunctive is like seasoning -- you don't always see it, but without it, everything tastes flat"
-- Prioritize Colombian/Latin American Spanish (the user's partner is Colombian)
-- Be encouraging but honest. "Pas mal, gamin. But a chef never serves a half-cooked dish -- let's fix that accent."
-
-LANGUAGE: Respond primarily in ${native} with key words and examples in ${target}. As the conversation progresses, increase the proportion of ${target}.`;
-}
+import { getMentorForUser, getMentorPrompt } from '@/modules/chat-mentor';
+import { getCharacter } from '@/modules/character-system';
+import { getUserProfile } from '@/modules/data-layer';
+import { saveConversation, getConversations, getConversation } from '@/modules/chat-mentor';
+import type { MentorProfile, ConversationPreview } from '@/modules/chat-mentor';
 
 export default function ChatPage() {
   return (
@@ -118,7 +25,35 @@ export default function ChatPage() {
 function ChatPageInner() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [mode, setMode] = useState<ChatMode>('mentor');
+  const [mentor, setMentor] = useState<MentorProfile | null>(null);
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<ConversationPreview[]>([]);
+  const [currentMessages, setCurrentMessages] = useState<ChatMessage[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    async function loadMentor() {
+      const [charResult, profile] = await Promise.all([
+        getCharacter(user!.id),
+        getUserProfile(user!.id),
+      ]);
+      const character = charResult.ok ? charResult.data : null;
+      const themeId = (profile?.theme_id || 'one-piece') as 'one-piece' | 'harry-potter';
+      const targetLang = (profile?.target_language || 'es') as 'es' | 'fr';
+      const nativeLang = (profile?.native_language || 'fr') as 'es' | 'fr';
+      const mentorProfile = getMentorForUser(character?.specialty || null, themeId);
+      setMentor(mentorProfile);
+      setSystemPrompt(getMentorPrompt(mentorProfile, targetLang, nativeLang));
+    }
+    loadMentor();
+  }, [user, authLoading]);
+
+  useEffect(() => {
+    if (!user) return;
+    getConversations(user.id).then(r => { if (r.ok) setHistory(r.data); });
+  }, [user]);
 
   const handleFlashcardCreate = useCallback(async (word: string, translation: string, context: string) => {
     if (!user) return;
@@ -128,59 +63,96 @@ function ChatPageInner() {
     ]);
   }, [user]);
 
+  const handleMessagesChange = useCallback((messages: ChatMessage[]) => {
+    setCurrentMessages(messages);
+    if (!user || !mentor || messages.length < 2) return;
+    const firstUserMsg = messages.find(m => m.role === 'user');
+    const title = firstUserMsg
+      ? firstUserMsg.content.slice(0, 50) + (firstUserMsg.content.length > 50 ? '...' : '')
+      : 'Conversation';
+    saveConversation(user.id, { user_id: user.id, title, messages, mentor_name: mentor.name });
+    // Refresh history
+    getConversations(user.id).then(r => { if (r.ok) setHistory(r.data); });
+  }, [user, mentor]);
+
+  const loadConversation = async (convId: string) => {
+    if (!user) return;
+    const result = await getConversation(user.id, convId);
+    if (result.ok && result.data) {
+      setCurrentMessages(result.data.messages);
+      setConversationId(convId);
+      setShowHistory(false);
+    }
+  };
+
+  const newConversation = () => {
+    setCurrentMessages([]);
+    setConversationId(crypto.randomUUID());
+    setShowHistory(false);
+  };
+
   if (authLoading) return null;
   if (!user) { router.push('/login'); return null; }
-
-  const systemPrompt = getMentorPrompt(mode, 'es', 'fr');
+  if (!mentor || !systemPrompt) {
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground animate-pulse">Loading your mentor...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <div className="border-b p-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/">
-              <Button variant="outline" size="sm">Volver</Button>
-            </Link>
-            <h1 className="text-lg font-bold text-primary">
-              {mode === 'mentor' && '👨‍🍳 Zeff'}
-              {mode === 'translate' && '🔄 Traduccion'}
-              {mode === 'learn' && '📚 Aprender'}
-            </h1>
+            <Link href="/"><Button variant="outline" size="sm">Volver</Button></Link>
+            <h1 className="text-lg font-bold text-primary">{mentor.emoji} {mentor.name}</h1>
           </div>
-
-          {/* Mode toggle */}
-          <div className="flex gap-1 bg-muted rounded-lg p-1">
-            {MODES.map(m => (
-              <button
-                key={m.id}
-                onClick={() => setMode(m.id)}
-                className={`px-3 py-1.5 rounded-md text-sm transition ${
-                  mode === m.id
-                    ? 'bg-primary text-primary-foreground font-bold'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {m.emoji}
-              </button>
-            ))}
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={newConversation}>+ Nuevo</Button>
+            <Button variant={showHistory ? 'default' : 'outline'} size="sm" onClick={() => setShowHistory(!showHistory)}>
+              Historial
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Chat */}
+      {showHistory && (
+        <div className="max-w-2xl mx-auto w-full border-b p-4 bg-muted/30 animate-fade-in">
+          <h3 className="font-bold text-sm mb-3">Conversaciones anteriores</h3>
+          {history.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Sin historial todavia.</p>
+          ) : (
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {history.map(conv => (
+                <button
+                  key={conv.id}
+                  onClick={() => loadConversation(conv.id)}
+                  className="w-full text-left p-3 rounded-lg border hover:bg-muted/50 transition"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium truncate flex-1">{conv.title}</span>
+                    <span className="text-xs text-muted-foreground ml-2">{conv.message_count} msgs</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {conv.mentor_name} · {new Date(conv.updated_at).toLocaleDateString()}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex-1 max-w-2xl mx-auto w-full">
         <ChatStream
-          key={mode} // Reset chat when mode changes
+          key={conversationId || 'new'}
           systemPrompt={systemPrompt}
-          placeholder={
-            mode === 'translate'
-              ? 'Ecris en francais ou en espagnol...'
-              : mode === 'learn'
-                ? 'Quel mot ou phrase veux-tu apprendre ?'
-                : 'Demande ce que tu veux a Zeff...'
-          }
+          placeholder={`Parle a ${mentor.name}... traduction, question, correction, tout !`}
           onFlashcardCreate={handleFlashcardCreate}
+          initialMessages={currentMessages}
+          onMessagesChange={handleMessagesChange}
         />
       </div>
     </main>
