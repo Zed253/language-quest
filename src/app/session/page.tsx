@@ -61,10 +61,13 @@ function SessionPageInner() {
   if (isLoading && phase === 'idle') {
     return (
       <main className="min-h-screen bg-background p-8">
-        <div className="max-w-lg mx-auto text-center pt-20">
-          <div className="text-4xl mb-4 animate-pulse">&#9881;&#65039;</div>
-          <p className="text-lg text-muted-foreground">Building your session...</p>
-          <p className="text-sm text-muted-foreground mt-2">The AI is preparing your exercises</p>
+        <div className="max-w-lg mx-auto text-center pt-20 animate-fade-in">
+          <div className="text-6xl mb-6">&#x1F6A2;</div>
+          <p className="text-xl font-bold text-primary">Preparando tu aventura...</p>
+          <p className="text-sm text-muted-foreground mt-2">El Thousand Sunny zarpa hacia la siguiente isla</p>
+          <div className="mt-8 h-1 bg-muted rounded-full overflow-hidden max-w-xs mx-auto">
+            <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: '60%' }} />
+          </div>
         </div>
       </main>
     );
@@ -74,11 +77,19 @@ function SessionPageInner() {
   if (error) {
     return (
       <main className="min-h-screen bg-background p-8">
-        <div className="max-w-lg mx-auto text-center pt-20 space-y-4">
-          <p className="text-destructive">{error}</p>
-          <Link href="/">
-            <Button onClick={reset}>Back to Dashboard</Button>
-          </Link>
+        <div className="max-w-lg mx-auto text-center pt-20 space-y-4 animate-fade-in">
+          <div className="text-4xl">&#x26C8;&#xFE0F;</div>
+          <p className="text-xl font-bold">Tormenta en el mar...</p>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={() => { reset(); startSession(user!.id); }}>Reintentar</Button>
+            <Link href="/snack">
+              <Button variant="outline">Snack Mode</Button>
+            </Link>
+            <Link href="/">
+              <Button variant="outline" onClick={reset}>Volver</Button>
+            </Link>
+          </div>
         </div>
       </main>
     );
@@ -90,7 +101,7 @@ function SessionPageInner() {
       <main className="min-h-screen bg-background p-8">
         <div className="max-w-lg mx-auto space-y-6 pt-10">
           <div className="text-sm uppercase tracking-wider text-muted-foreground">
-            Session Intro
+            &#x1F3F4;&#x200D;&#x2620;&#xFE0F; Capitulo del dia
           </div>
 
           <div className="rounded-xl border-2 p-6 space-y-4">
@@ -117,11 +128,11 @@ function SessionPageInner() {
           </div>
 
           <div className="text-sm text-muted-foreground">
-            {plan.totalExercises} exercises &middot; ~{plan.estimatedMinutes} min &middot; {plan.dominance}
+            {plan.totalExercises} ejercicios &middot; ~{plan.estimatedMinutes} min
           </div>
 
-          <Button size="lg" className="w-full" onClick={dismissIntro}>
-            Start
+          <Button size="lg" className="w-full text-lg" onClick={dismissIntro}>
+            &#x2693; Zarpar
           </Button>
         </div>
       </main>
@@ -207,8 +218,8 @@ function SessionPageInner() {
     return (
       <main className="min-h-screen bg-background p-8">
         <div className="max-w-lg mx-auto space-y-6 pt-10 text-center">
-          <div className="text-5xl">&#127881;</div>
-          <h1 className="text-3xl font-bold">Session Complete!</h1>
+          <div className="text-5xl">&#x1F3F4;&#x200D;&#x2620;&#xFE0F;</div>
+          <h1 className="text-3xl font-bold text-primary">&#xA1;Mision cumplida!</h1>
 
           {/* Narrative outro */}
           <div className="rounded-xl border p-6 text-left space-y-3">
@@ -237,11 +248,11 @@ function SessionPageInner() {
           <div className="grid grid-cols-3 gap-4">
             <div className="rounded-lg border p-4">
               <div className="text-2xl font-bold">{completeData.stats.exercisesCompleted}</div>
-              <div className="text-sm text-muted-foreground">Exercises</div>
+              <div className="text-sm text-muted-foreground">Ejercicios</div>
             </div>
             <div className="rounded-lg border p-4">
               <div className="text-2xl font-bold text-green-500">{completeData.stats.successRate}%</div>
-              <div className="text-sm text-muted-foreground">Success</div>
+              <div className="text-sm text-muted-foreground">Exito</div>
             </div>
             <div className="rounded-lg border p-4">
               <div className="text-2xl font-bold text-amber-500">+{completeData.currencyEarned}</div>
@@ -261,7 +272,7 @@ function SessionPageInner() {
 
           <Link href="/">
             <Button size="lg" className="w-full" onClick={reset}>
-              Back to Dashboard
+              Volver al puerto
             </Button>
           </Link>
         </div>

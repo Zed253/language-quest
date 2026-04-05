@@ -51,7 +51,66 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
   startSession: async (userId: string) => {
     set({ isLoading: true, error: null, phase: 'idle' });
 
-    const result = await buildSession(userId);
+    // Add a 12s timeout -- if LLM takes too long, we'll still show flashcards
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('SESSION_TIMEOUT')), 12000)
+    );
+
+    let result;
+    try {
+      result = await Promise.race([buildSession(userId), timeoutPromise]);
+    } catch (e) {
+      // Timeout or error -- create a fallback FSRS-only session
+      const { getNextCards } = await import('@/modules/fsrs-engine');
+      const cardsResult = await getNextCards(userId, 10);
+      const cards = cardsResult.ok ? cardsResult.data : [];
+
+      if (cards.length === 0) {
+        set({ isLoading: false, error: 'No cards available. Try loading flashcards first.' });
+        return;
+      }
+
+      // Build a minimal FSRS-only plan
+      const fallbackPlan = {
+        id: crypto.randomUUID(),
+        userId,
+        phases: {
+          warmup: {
+            type: 'warmup' as const,
+            exercises: cards.map(card => ({
+              id: crypto.randomUUID(),
+              source: 'fsrs' as const,
+              exercise: null,
+              card,
+              status: 'pending' as const,
+            })),
+            completed: false,
+          },
+          main: { type: 'main' as const, exercises: [], completed: true },
+          finisher: { type: 'finisher' as const, exercises: [], completed: true },
+          cooldown: { type: 'cooldown' as const, exercises: [], completed: true },
+        },
+        totalExercises: cards.length,
+        estimatedMinutes: Math.round(cards.length * 0.5),
+        dominance: 'review',
+        theme: 'daily-life',
+        narrativeIntro: '¡Hoy revisamos vocabulario! El capitán necesita refrescar su memoria.',
+        narrativeOutro: '¡Buen trabajo, marinero! Tu tripulación está orgullosa.',
+        narrativeIntroTranslation: '',
+        narrativeOutroTranslation: '',
+      };
+
+      set({
+        plan: fallbackPlan,
+        currentExercise: fallbackPlan.phases.warmup.exercises[0],
+        currentPhase: 'warmup',
+        overallProgress: 0,
+        isLoading: false,
+        phase: 'intro',
+        showTranslation: false,
+      });
+      return;
+    }
 
     if (result.ok) {
       const plan = result.data;
