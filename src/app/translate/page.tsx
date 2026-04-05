@@ -169,7 +169,7 @@ RULES:
               <Button onClick={copyToClipboard} className="flex-1" variant={copied ? 'default' : 'outline'}>
                 {copied ? '✅ Copiado!' : '📋 Copiar'}
               </Button>
-              <Link href="/chat" className="flex-1">
+              <Link href={`/chat?learn=${encodeURIComponent(input)}`} className="flex-1">
                 <Button variant="outline" className="w-full">
                   👨‍🍳 Aprender con Zeff
                 </Button>

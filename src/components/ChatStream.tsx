@@ -21,6 +21,8 @@ interface ChatStreamProps {
   className?: string;
   initialMessages?: ChatMessage[];
   onMessagesChange?: (messages: ChatMessage[]) => void;
+  autoSendMessage?: string;
+  onAutoSendComplete?: () => void;
 }
 
 export function ChatStream({
@@ -30,10 +32,13 @@ export function ChatStream({
   className,
   initialMessages,
   onMessagesChange,
+  autoSendMessage,
+  onAutoSendComplete,
 }: ChatStreamProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages || []);
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
+  const [autoSent, setAutoSent] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,13 +46,35 @@ export function ChatStream({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Auto-send message from URL parameter (Traduire → Zeff bridge)
+  useEffect(() => {
+    if (autoSendMessage && !autoSent && !streaming) {
+      setAutoSent(true);
+      setInput(autoSendMessage);
+      // Small delay to let the component mount
+      setTimeout(() => {
+        sendMessageDirect(`Enseigne-moi cette expression en detail: "${autoSendMessage}"`);
+        onAutoSendComplete?.();
+      }, 500);
+    }
+  }, [autoSendMessage, autoSent, streaming]);
+
+  const sendMessageDirect = async (directMessage: string) => {
+    if (!directMessage.trim() || streaming) return;
+    const userMessage: ChatMessage = { role: 'user', content: directMessage.trim() };
+    await processMessage(userMessage);
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || streaming) return;
-
     const userMessage: ChatMessage = { role: 'user', content: input.trim() };
+    setInput('');
+    await processMessage(userMessage);
+  };
+
+  const processMessage = async (userMessage: ChatMessage) => {
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
-    setInput('');
     setStreaming(true);
 
     // Add empty assistant message that we'll stream into

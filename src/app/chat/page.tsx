@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { ChatStream, type ChatMessage } from '@/components/ChatStream';
@@ -17,7 +17,9 @@ import type { MentorProfile, ConversationPreview } from '@/modules/chat-mentor';
 export default function ChatPage() {
   return (
     <ErrorBoundary module="chat">
-      <ChatPageInner />
+      <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><p className="text-muted-foreground">Cargando...</p></div>}>
+        <ChatPageInner />
+      </Suspense>
     </ErrorBoundary>
   );
 }
@@ -27,10 +29,13 @@ function ChatPageInner() {
   const { user, loading: authLoading } = useAuth();
   const [mentor, setMentor] = useState<MentorProfile | null>(null);
   const [systemPrompt, setSystemPrompt] = useState('');
+  const searchParams = useSearchParams();
+  const learnParam = searchParams.get('learn');
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<ConversationPreview[]>([]);
   const [currentMessages, setCurrentMessages] = useState<ChatMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [initialQuery, setInitialQuery] = useState<string | null>(learnParam);
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -153,6 +158,8 @@ function ChatPageInner() {
           onFlashcardCreate={handleFlashcardCreate}
           initialMessages={currentMessages}
           onMessagesChange={handleMessagesChange}
+          autoSendMessage={initialQuery || undefined}
+          onAutoSendComplete={() => setInitialQuery(null)}
         />
       </div>
     </main>
