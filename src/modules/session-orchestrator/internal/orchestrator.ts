@@ -71,7 +71,8 @@ export async function buildSession(
     const cardsResult = await getNextCards(userId, 5);
     const warmupCards = cardsResult.ok ? cardsResult.data : [];
 
-    // 2. Generate exercises via LLM
+    // 2. Generate exercises + narrative in ONE LLM call
+    //    (generateExercises returns narrative_intro + narrative_outro in the response)
     const exercisesResult = await generateExercises({
       userId,
       targetLanguage: targetLang,
@@ -86,30 +87,12 @@ export async function buildSession(
       difficultyTarget: dir.difficultyTarget,
       exerciseCount: dir.exerciseCount,
       themeId,
+      narrativeContext: dir.narrativeContext,
     });
 
-    // 3. Generate narrative
-    const introResult = await generateNarrative({
-      userId,
-      type: 'session-intro',
-      targetLanguage: targetLang,
-      currentPhase,
-      themeId,
-      mesoTheme: dir.mesoTheme,
-      narrativeArc: dir.narrativeContext || 'Adventure',
-      userLevel: Math.min(currentPhase, 5),
-    });
-
-    const outroResult = await generateNarrative({
-      userId,
-      type: 'session-outro',
-      targetLanguage: targetLang,
-      currentPhase,
-      themeId,
-      mesoTheme: dir.mesoTheme,
-      narrativeArc: dir.narrativeContext || 'Adventure',
-      userLevel: Math.min(currentPhase, 5),
-    });
+    // Narrative comes from the same LLM response (no extra API calls)
+    const narrativeIntro = exercisesResult.ok ? exercisesResult.data.narrative_intro : '¡Vamos a aprender!';
+    const narrativeOutro = exercisesResult.ok ? exercisesResult.data.narrative_outro : '¡Buen trabajo!';
 
     // Build exercise items
     const warmupExercises: SessionExercise[] = warmupCards.map((card) => ({
@@ -152,10 +135,10 @@ export async function buildSession(
       estimatedMinutes: Math.round((warmupExercises.length + mainExercises.length + finisherExercise.length) * 1.5),
       dominance: dir.dominance,
       theme: dir.mesoTheme,
-      narrativeIntro: introResult.ok ? introResult.data.text : '¡Vamos a aprender!',
-      narrativeOutro: outroResult.ok ? outroResult.data.text : '¡Buen trabajo!',
-      narrativeIntroTranslation: introResult.ok ? introResult.data.translation : "C'est parti !",
-      narrativeOutroTranslation: outroResult.ok ? outroResult.data.translation : 'Bon travail !',
+      narrativeIntro: narrativeIntro,
+      narrativeOutro: narrativeOutro,
+      narrativeIntroTranslation: '', // Translation generated on-demand via translate button
+      narrativeOutroTranslation: '',
     };
 
     // Initialize session state
