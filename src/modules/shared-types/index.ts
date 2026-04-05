@@ -10,6 +10,8 @@ export type {
   FsrsCardState,
   CardDirection,
   ModuleError,
+  ThemeId,
+  TargetLanguage,
 } from './domain';
 export type { DomainEvent } from './events';
 export {
