@@ -2,11 +2,11 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useReviewStore } from '@/stores/review-store';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import type { FsrsRating } from '@/modules/shared-types';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
 
 const GRADE_BUTTONS: { rating: FsrsRating; label: string; sublabel: string; color: string }[] = [
   { rating: 1, label: 'Again', sublabel: "Didn't know", color: 'bg-red-500 hover:bg-red-600' },
@@ -16,6 +16,8 @@ const GRADE_BUTTONS: { rating: FsrsRating; label: string; sublabel: string; colo
 ];
 
 export default function ReviewPage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const {
     deck,
     currentIndex,
@@ -34,8 +36,10 @@ export default function ReviewPage() {
   } = useReviewStore();
 
   useEffect(() => {
-    loadDeck(TEMP_USER_ID);
-  }, [loadDeck]);
+    if (authLoading) return;
+    if (!user) { router.push('/login'); return; }
+    loadDeck(user.id);
+  }, [user, authLoading, router, loadDeck]);
 
   const currentCard = deck[currentIndex];
   const progress = deck.length > 0 ? ((currentIndex) / deck.length) * 100 : 0;
@@ -166,7 +170,7 @@ export default function ReviewPage() {
               <button
                 key={rating}
                 disabled={isLoading}
-                onClick={() => gradeCard(TEMP_USER_ID, rating)}
+                onClick={() => gradeCard(user!.id, rating)}
                 className={`${color} text-white rounded-lg p-3 transition-all disabled:opacity-50`}
               >
                 <div className="font-bold text-sm">{label}</div>

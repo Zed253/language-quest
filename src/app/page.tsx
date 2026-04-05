@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { getStats } from '@/modules/fsrs-engine';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 
-// Temporary: hardcoded user ID until auth is wired
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
-
 export default function Dashboard() {
+  const router = useRouter();
+  const { user, loading: authLoading, signOut } = useAuth();
   const [stats, setStats] = useState<{
     total: number;
     due: number;
@@ -19,15 +20,24 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!user) { router.push('/login'); return; }
+
     async function load() {
-      const result = await getStats(TEMP_USER_ID);
+      const result = await getStats(user!.id);
       if (result.ok) {
         setStats(result.data);
       }
       setLoading(false);
     }
     load();
-  }, []);
+  }, [user, authLoading, router]);
+
+  if (authLoading || !user) {
+    return <main className="min-h-screen bg-background p-8"><div className="text-muted-foreground">Loading...</div></main>;
+  }
+
+  const userId = user.id;
 
   return (
     <main className="min-h-screen bg-background p-8">

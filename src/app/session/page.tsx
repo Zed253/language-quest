@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSessionStore } from '@/stores/session-store';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
-
 export default function SessionPage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const {
     plan,
     currentExercise,
@@ -30,8 +32,10 @@ export default function SessionPage() {
   const [userInput, setUserInput] = useState('');
 
   useEffect(() => {
-    startSession(TEMP_USER_ID);
-  }, [startSession]);
+    if (authLoading) return;
+    if (!user) { router.push('/login'); return; }
+    startSession(user.id);
+  }, [user, authLoading, router, startSession]);
 
   // ============ LOADING ============
   if (isLoading && phase === 'idle') {

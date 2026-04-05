@@ -4,6 +4,8 @@ import { generateExercises, generateNarrative } from '@/modules/llm-pipeline';
 import { gradeExercise } from '@/modules/exercise-engine';
 import { reviewCard } from '@/modules/fsrs-engine';
 import { eventBus } from '@/modules/event-bus';
+import { getDailyDirective } from '@/modules/periodization-engine';
+import { getUserProfile } from '@/modules/data-layer';
 import type {
   SessionPlan,
   SessionState,
@@ -44,7 +46,26 @@ export async function buildSession(
   directive?: PeriodizationDirective
 ): Promise<Result<SessionPlan>> {
   try {
-    const dir = directive || getDefaultDirective(Date.now() % 365);
+    // Get periodization directive (real or default)
+    let dir: PeriodizationDirective;
+    if (directive) {
+      dir = directive;
+    } else {
+      const periodResult = await getDailyDirective(userId);
+      dir = periodResult.ok ? periodResult.data : getDefaultDirective(Date.now() % 365);
+    }
+
+    // Rest day: return empty session
+    if (dir.dominance === 'rest') {
+      dir = getDefaultDirective(Date.now() % 365);
+    }
+
+    // Read user profile for language + theme
+    const userProfile = await getUserProfile(userId);
+    const targetLang = (userProfile?.target_language || 'es') as 'es' | 'fr';
+    const nativeLang = (userProfile?.native_language || 'fr') as 'es' | 'fr';
+    const themeId = (userProfile?.theme_id || 'one-piece') as 'one-piece' | 'harry-potter';
+    const currentPhase = userProfile?.current_phase || 1;
 
     // 1. Get FSRS cards for warm-up (5 cards)
     const cardsResult = await getNextCards(userId, 5);
@@ -53,9 +74,9 @@ export async function buildSession(
     // 2. Generate exercises via LLM
     const exercisesResult = await generateExercises({
       userId,
-      targetLanguage: 'es', // TODO: read from user profile
-      nativeLanguage: 'fr',
-      currentPhase: 1, // TODO: read from user profile
+      targetLanguage: targetLang,
+      nativeLanguage: nativeLang,
+      currentPhase,
       mesoTheme: dir.mesoTheme,
       dominance: dir.dominance,
       targetTenses: dir.targetTenses,
@@ -64,30 +85,30 @@ export async function buildSession(
       weakAreas: [],
       difficultyTarget: dir.difficultyTarget,
       exerciseCount: dir.exerciseCount,
-      themeId: 'one-piece', // TODO: read from user profile
+      themeId,
     });
 
     // 3. Generate narrative
     const introResult = await generateNarrative({
       userId,
       type: 'session-intro',
-      targetLanguage: 'es',
-      currentPhase: 1,
-      themeId: 'one-piece',
+      targetLanguage: targetLang,
+      currentPhase,
+      themeId,
       mesoTheme: dir.mesoTheme,
-      narrativeArc: 'East Blue',
-      userLevel: 1,
+      narrativeArc: dir.narrativeContext || 'Adventure',
+      userLevel: Math.min(currentPhase, 5),
     });
 
     const outroResult = await generateNarrative({
       userId,
       type: 'session-outro',
-      targetLanguage: 'es',
-      currentPhase: 1,
-      themeId: 'one-piece',
+      targetLanguage: targetLang,
+      currentPhase,
+      themeId,
       mesoTheme: dir.mesoTheme,
-      narrativeArc: 'East Blue',
-      userLevel: 1,
+      narrativeArc: dir.narrativeContext || 'Adventure',
+      userLevel: Math.min(currentPhase, 5),
     });
 
     // Build exercise items

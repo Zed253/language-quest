@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/lib/auth';
 import { getSharedVitality, getPartnerStats, getPostcards } from '@/modules/couple-collab';
 import { getActiveQuests } from '@/modules/game-master';
 import type { VitalityState, PartnerStats, Postcard } from '@/modules/couple-collab';
 import type { Quest } from '@/modules/game-master';
 
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
-
 export default function CrewPage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [vitality, setVitality] = useState<VitalityState | null>(null);
   const [partner, setPartner] = useState<PartnerStats | null>(null);
   const [postcards, setPostcards] = useState<Postcard[]>([]);
@@ -18,12 +20,15 @@ export default function CrewPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!user) { router.push('/login'); return; }
+
     async function load() {
       const [vRes, pRes, pcRes, qRes] = await Promise.all([
-        getSharedVitality(TEMP_USER_ID),
-        getPartnerStats(TEMP_USER_ID),
-        getPostcards(TEMP_USER_ID),
-        getActiveQuests(TEMP_USER_ID),
+        getSharedVitality(user!.id),
+        getPartnerStats(user!.id),
+        getPostcards(user!.id),
+        getActiveQuests(user!.id),
       ]);
 
       if (vRes.ok) setVitality(vRes.data);
