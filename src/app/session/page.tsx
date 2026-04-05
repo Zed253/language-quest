@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSessionStore } from '@/stores/session-store';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
+import { TappableText } from '@/components/TappableText';
+import { addCards } from '@/modules/fsrs-engine';
 
 export default function SessionPage() {
   const router = useRouter();
@@ -30,6 +32,14 @@ export default function SessionPage() {
   } = useSessionStore();
 
   const [userInput, setUserInput] = useState('');
+
+  const handleAddToDeck = useCallback(async (word: string, translation: string) => {
+    if (!user) return;
+    await addCards(user.id, [
+      { word_l2: word, word_l1: translation, example_sentence: '', frequency_rank: 9999, direction: 'l2-to-l1' },
+      { word_l2: word, word_l1: translation, example_sentence: '', frequency_rank: 9999, direction: 'l1-to-l2' },
+    ]);
+  }, [user]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -75,10 +85,14 @@ export default function SessionPage() {
 
           <div className="rounded-xl border-2 p-6 space-y-4">
             <p className="text-lg leading-relaxed">
-              {plan.narrativeIntro}
+              <TappableText
+                text={plan.narrativeIntro}
+                language="es"
+                onAddToDeck={handleAddToDeck}
+              />
             </p>
 
-            {showTranslation && (
+            {showTranslation && plan.narrativeIntroTranslation && (
               <p className="text-sm text-muted-foreground italic border-t pt-3">
                 {plan.narrativeIntroTranslation}
               </p>
@@ -188,14 +202,24 @@ export default function SessionPage() {
 
           {/* Narrative outro */}
           <div className="rounded-xl border p-6 text-left space-y-3">
-            <p className="text-lg leading-relaxed">{completeData.narrativeOutro}</p>
-            <button onClick={toggleTranslation} className="text-xs text-primary underline">
-              {showTranslation ? 'Hide' : 'Translate'}
-            </button>
-            {showTranslation && (
-              <p className="text-sm text-muted-foreground italic">
-                {completeData.narrativeOutroTranslation}
-              </p>
+            <p className="text-lg leading-relaxed">
+              <TappableText
+                text={completeData.narrativeOutro}
+                language="es"
+                onAddToDeck={handleAddToDeck}
+              />
+            </p>
+            {completeData.narrativeOutroTranslation && (
+              <>
+                <button onClick={toggleTranslation} className="text-xs text-primary underline">
+                  {showTranslation ? 'Hide' : 'Translate'}
+                </button>
+                {showTranslation && (
+                  <p className="text-sm text-muted-foreground italic">
+                    {completeData.narrativeOutroTranslation}
+                  </p>
+                )}
+              </>
             )}
           </div>
 
@@ -258,46 +282,111 @@ function FlashcardExercise({
   isLoading: boolean;
 }) {
   const [revealed, setRevealed] = useState(false);
+  const [hintLevel, setHintLevel] = useState(0); // 0=none, 1=context, 2=first letter, 3=full sentence
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
   const front = card.direction === 'l2-to-l1' ? card.word_l2 : card.word_l1;
   const back = card.direction === 'l2-to-l1' ? card.word_l1 : card.word_l2;
+  const isSpanishFront = card.direction === 'l2-to-l1';
+
+  const playAudio = async (text: string) => {
+    setAudioPlaying(true);
+    try {
+      const res = await fetch('/api/audio/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, voice: 'nova' }),
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.onended = () => setAudioPlaying(false);
+        await audio.play();
+      }
+    } catch { /* silent fail */ }
+    setAudioPlaying(false);
+  };
+
+  const hints = [
+    card.example_sentence ? `Context: "${card.example_sentence.replace(card.word_l2, '___')}"` : null,
+    back ? `First letter: ${back[0]}...` : null,
+    card.example_sentence || null,
+  ].filter(Boolean) as string[];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-slide-up">
       <div
-        className="rounded-xl border-2 p-8 min-h-[250px] flex flex-col items-center justify-center cursor-pointer"
+        className="rounded-xl border-2 p-8 min-h-[280px] flex flex-col items-center justify-center cursor-pointer transition-all hover:border-primary/50"
         onClick={() => !revealed && setRevealed(true)}
       >
-        <div className="text-xs text-muted-foreground mb-4">
-          {card.direction === 'l2-to-l1' ? 'ES → FR' : 'FR → ES'}
+        <div className="text-xs text-muted-foreground mb-2">
+          {card.direction === 'l2-to-l1' ? '&#127466;&#127480; → &#127467;&#127479;' : '&#127467;&#127479; → &#127466;&#127480;'}
         </div>
-        <div className="text-3xl font-bold mb-4">{front}</div>
+
+        {/* Audio button */}
+        <button
+          onClick={(e) => { e.stopPropagation(); playAudio(card.word_l2); }}
+          className="text-2xl mb-3 hover:scale-110 transition-transform"
+          disabled={audioPlaying}
+        >
+          {audioPlaying ? '&#128266;' : '&#128264;'}
+        </button>
+
+        <div className="text-4xl font-bold mb-4">{front}</div>
+
+        {/* Progressive hints */}
+        {!revealed && hintLevel > 0 && hints.slice(0, hintLevel).map((hint, i) => (
+          <p key={i} className="text-sm text-amber-600 italic mt-2">&#128161; {hint}</p>
+        ))}
 
         {revealed ? (
-          <div className="space-y-3 text-center border-t pt-4 w-full">
-            <div className="text-2xl text-primary">{back}</div>
-            <div className="text-sm text-muted-foreground italic">{card.example_sentence}</div>
+          <div className="space-y-3 text-center border-t pt-4 w-full animate-fade-in">
+            <div className="text-2xl text-primary font-bold">{back}</div>
+            {card.example_sentence && (
+              <div className="text-sm text-muted-foreground italic">{card.example_sentence}</div>
+            )}
+            {/* Play example sentence */}
+            {card.example_sentence && (
+              <button
+                onClick={(e) => { e.stopPropagation(); playAudio(card.example_sentence); }}
+                className="text-xs text-primary underline"
+              >
+                &#128264; Listen to example
+              </button>
+            )}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">Tap to reveal</p>
+          <div className="space-y-2 mt-4">
+            <p className="text-sm text-muted-foreground">Tap to reveal</p>
+            {hintLevel < hints.length && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setHintLevel(h => h + 1); }}
+                className="text-xs text-primary underline"
+              >
+                Need a hint? ({hintLevel + 1}/{hints.length})
+              </button>
+            )}
+          </div>
         )}
       </div>
 
       {revealed && (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2 animate-fade-in">
           {[
-            { r: 1, label: 'Again', color: 'bg-red-500 hover:bg-red-600' },
-            { r: 2, label: 'Hard', color: 'bg-orange-500 hover:bg-orange-600' },
-            { r: 3, label: 'Good', color: 'bg-green-500 hover:bg-green-600' },
-            { r: 4, label: 'Easy', color: 'bg-blue-500 hover:bg-blue-600' },
-          ].map(({ r, label, color }) => (
+            { r: 1, label: 'Again', sub: "Didn't know", color: 'bg-red-500 hover:bg-red-600' },
+            { r: 2, label: 'Hard', sub: 'Struggled', color: 'bg-orange-500 hover:bg-orange-600' },
+            { r: 3, label: 'Good', sub: 'Recalled', color: 'bg-green-500 hover:bg-green-600' },
+            { r: 4, label: 'Easy', sub: 'Instant', color: 'bg-blue-500 hover:bg-blue-600' },
+          ].map(({ r, label, sub, color }) => (
             <button
               key={r}
               disabled={isLoading}
-              onClick={() => { onGrade(r); setRevealed(false); }}
-              className={`${color} text-white rounded-lg p-3 font-bold text-sm disabled:opacity-50`}
+              onClick={() => { onGrade(r); setRevealed(false); setHintLevel(0); }}
+              className={`${color} text-white rounded-lg p-3 disabled:opacity-50 transition-transform hover:scale-105`}
             >
-              {label}
+              <div className="font-bold text-sm">{label}</div>
+              <div className="text-xs opacity-80">{sub}</div>
             </button>
           ))}
         </div>
