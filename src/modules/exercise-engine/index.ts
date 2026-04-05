@@ -9,3 +9,6 @@ import './internal/types/translation-l1-to-l2';
 import './internal/types/translation-l2-to-l1';
 import './internal/types/sentence-building';
 import './internal/types/qcm';
+import './internal/types/shadowing';
+import './internal/types/listen-transcribe';
+import './internal/types/free-speaking';
