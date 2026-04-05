@@ -1,0 +1,24 @@
+[
+  { "id": 1, "phase_id": 1, "weeks": [1, 2, 3], "theme": "introductions", "real_life_topic": "Se presenter, saluer, dire son nom et age", "target_tenses": ["presente"], "deload_week": 3 },
+  { "id": 2, "phase_id": 1, "weeks": [4, 5, 6], "theme": "daily-routine", "real_life_topic": "Decrire sa journee, heure, habitudes", "target_tenses": ["presente"], "deload_week": 6 },
+  { "id": 3, "phase_id": 1, "weeks": [7, 8], "theme": "food-drinks", "real_life_topic": "Commander, nourritures, boissons, restaurant", "target_tenses": ["presente", "infinitivo"], "deload_week": 8 },
+
+  { "id": 4, "phase_id": 2, "weeks": [9, 10, 11], "theme": "travel-transport", "real_life_topic": "Directions, transport, aeroport, hotel", "target_tenses": ["presente", "futuro_proximo"], "deload_week": 11 },
+  { "id": 5, "phase_id": 2, "weeks": [12, 13, 14], "theme": "shopping-money", "real_life_topic": "Achats, prix, vetements, marche", "target_tenses": ["presente", "preterito_perfecto"], "deload_week": 14 },
+  { "id": 6, "phase_id": 2, "weeks": [15, 16, 17], "theme": "health-body", "real_life_topic": "Corps, sante, medecin, pharmacie", "target_tenses": ["presente", "preterito_indefinido"], "deload_week": 17 },
+  { "id": 7, "phase_id": 2, "weeks": [18, 19, 20], "theme": "home-family", "real_life_topic": "Maison, famille, relations, animaux", "target_tenses": ["preterito_indefinido", "preterito_perfecto"], "deload_week": 20 },
+
+  { "id": 8, "phase_id": 3, "weeks": [21, 22, 23], "theme": "work-studies", "real_life_topic": "Travail, metiers, bureau, etudes", "target_tenses": ["preterito_imperfecto", "preterito_indefinido"], "deload_week": 23 },
+  { "id": 9, "phase_id": 3, "weeks": [24, 25, 26], "theme": "hobbies-sports", "real_life_topic": "Loisirs, sports, musique, cinema", "target_tenses": ["preterito_imperfecto", "condicional"], "deload_week": 26 },
+  { "id": 10, "phase_id": 3, "weeks": [27, 28, 29], "theme": "weather-nature", "real_life_topic": "Meteo, saisons, environnement, animaux", "target_tenses": ["condicional", "imperativo"], "deload_week": 29 },
+  { "id": 11, "phase_id": 3, "weeks": [30, 31], "theme": "city-neighborhood", "real_life_topic": "Ville, quartier, services, problemes urbains", "target_tenses": ["imperativo", "preterito_imperfecto"], "deload_week": 31 },
+  { "id": 12, "phase_id": 3, "weeks": [32, 33, 34], "theme": "cooking-recipes", "real_life_topic": "Cuisine, recettes, ingredients, instructions", "target_tenses": ["imperativo", "preterito_indefinido"], "deload_week": 34 },
+
+  { "id": 13, "phase_id": 4, "weeks": [35, 36, 37], "theme": "emotions-opinions", "real_life_topic": "Sentiments, opinions, debats, arguments", "target_tenses": ["subjuntivo_presente"], "deload_week": 37 },
+  { "id": 14, "phase_id": 4, "weeks": [38, 39, 40], "theme": "technology-media", "real_life_topic": "Internet, reseaux sociaux, actualites", "target_tenses": ["subjuntivo_presente", "futuro_simple"], "deload_week": 40 },
+  { "id": 15, "phase_id": 4, "weeks": [41, 42, 43, 44], "theme": "culture-history", "real_life_topic": "Histoire, traditions, fetes, art", "target_tenses": ["pluscuamperfecto", "subjuntivo_presente"], "deload_week": 44 },
+
+  { "id": 16, "phase_id": 5, "weeks": [45, 46, 47], "theme": "abstract-philosophy", "real_life_topic": "Idees abstraites, philosophie, reves, futur", "target_tenses": ["subjuntivo_imperfecto", "condicional_compuesto"], "deload_week": 47 },
+  { "id": 17, "phase_id": 5, "weeks": [48, 49, 50], "theme": "professional-formal", "real_life_topic": "Registre formel, lettres, presentations, negociation", "target_tenses": ["subjuntivo_imperfecto", "condicional_compuesto"], "deload_week": 50 },
+  { "id": 18, "phase_id": 5, "weeks": [51, 52], "theme": "free-expression", "real_life_topic": "Expression libre, humour, nuances, style personnel", "target_tenses": ["all"], "deload_week": 52 }
+]

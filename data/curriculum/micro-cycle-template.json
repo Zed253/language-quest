@@ -1,0 +1,11 @@
+{
+  "days": [
+    { "day_of_week": 1, "label": "Monday",    "dominance": "accumulation-oral",      "channel_focus": "oral-comprehension",    "exercise_weights": { "shadowing": 0.3, "listen-transcribe": 0.3, "flashcard-rich": 0.2, "cloze": 0.2 } },
+    { "day_of_week": 2, "label": "Tuesday",   "dominance": "intensification-written", "channel_focus": "written-production",    "exercise_weights": { "cloze": 0.25, "translation-l1-to-l2": 0.25, "sentence-building": 0.25, "flashcard-rich": 0.25 } },
+    { "day_of_week": 3, "label": "Wednesday", "dominance": "accumulation-mixed",      "channel_focus": "mixed",                "exercise_weights": { "translation-l2-to-l1": 0.2, "cloze": 0.2, "listen-transcribe": 0.2, "flashcard-rich": 0.2, "free-speaking": 0.2 } },
+    { "day_of_week": 4, "label": "Thursday",  "dominance": "intensification-oral",    "channel_focus": "oral-production",       "exercise_weights": { "free-speaking": 0.3, "shadowing": 0.3, "flashcard-rich": 0.2, "translation-l1-to-l2": 0.2 } },
+    { "day_of_week": 5, "label": "Friday",    "dominance": "accumulation-written",    "channel_focus": "written-comprehension", "exercise_weights": { "translation-l2-to-l1": 0.3, "cloze": 0.3, "flashcard-rich": 0.2, "sentence-building": 0.2 } },
+    { "day_of_week": 6, "label": "Saturday",  "dominance": "deload",                  "channel_focus": "review",               "exercise_weights": { "flashcard-rich": 0.7, "cloze": 0.15, "translation-l2-to-l1": 0.15 } },
+    { "day_of_week": 0, "label": "Sunday",    "dominance": "rest",                    "channel_focus": "none",                 "exercise_weights": {} }
+  ]
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "Exposure",
+    "weeks_start": 1,
+    "weeks_end": 8,
+    "vocab_range": [1, 500],
+    "tenses": ["presente", "infinitivo"],
+    "intensity_profile": "high-volume-low-intensity",
+    "description": "Phonetics, survival vocabulary, basic patterns"
+  },
+  {
+    "id": 2,
+    "name": "Comprehension",
+    "weeks_start": 9,
+    "weeks_end": 20,
+    "vocab_range": [501, 1000],
+    "tenses": ["presente", "preterito_indefinido", "preterito_perfecto", "futuro_proximo"],
+    "intensity_profile": "high-volume-med-intensity",
+    "description": "Basic grammar, sentences, past and future"
+  },
+  {
+    "id": 3,
+    "name": "Ascension",
+    "weeks_start": 21,
+    "weeks_end": 34,
+    "vocab_range": [1001, 2000],
+    "tenses": ["presente", "preterito_indefinido", "preterito_imperfecto", "condicional", "imperativo"],
+    "intensity_profile": "med-volume-med-high-intensity",
+    "description": "Conversations, reading, descriptions, hypotheticals"
+  },
+  {
+    "id": 4,
+    "name": "Summit",
+    "weeks_start": 35,
+    "weeks_end": 44,
+    "vocab_range": [2001, 3000],
+    "tenses": ["subjuntivo_presente", "futuro_simple", "pluscuamperfecto"],
+    "intensity_profile": "low-volume-high-intensity",
+    "description": "Fluent expression, nuance, complex structures"
+  },
+  {
+    "id": 5,
+    "name": "Realization",
+    "weeks_start": 45,
+    "weeks_end": 52,
+    "vocab_range": [3001, 3500],
+    "tenses": ["subjuntivo_imperfecto", "condicional_compuesto"],
+    "intensity_profile": "low-volume-max-intensity",
+    "description": "Native content, autonomy, literary register"
+  }
+]
