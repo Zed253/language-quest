@@ -257,7 +257,7 @@ export function ChatStream({
                 const SpeechRecAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
                 if (!SpeechRecAPI) { alert('Reconnaissance vocale non supportee dans ce navigateur'); return; }
                 const recognition = new SpeechRecAPI();
-                recognition.lang = 'es-ES';
+                recognition.lang = ''; // Auto-detect language (works for both FR and ES)
                 recognition.continuous = false;
                 recognition.interimResults = true;
                 w._speechRec = recognition;

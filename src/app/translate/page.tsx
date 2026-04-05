@@ -150,15 +150,18 @@ RULES:
           )}
         </div>
 
-        {/* Translate button */}
-        <Button
-          onClick={translate}
-          disabled={loading || !input.trim()}
-          className="w-full py-6 text-lg font-bold"
-          size="lg"
-        >
-          {loading ? 'Traduciendo...' : '🔄 Traducir'}
-        </Button>
+        {/* Translate + Mic buttons */}
+        <div className="flex gap-2">
+          <Button
+            onClick={translate}
+            disabled={loading || !input.trim()}
+            className="flex-1 py-6 text-lg font-bold"
+            size="lg"
+          >
+            {loading ? 'Traduciendo...' : '🔄 Traducir'}
+          </Button>
+          <MicButton onTranscript={(text) => setInput(prev => prev ? prev + ' ' + text : text)} />
+        </div>
 
         {/* Output */}
         {output && (
@@ -181,23 +184,89 @@ RULES:
         {/* Recent translations */}
         {recentTranslations.length > 0 && !output && (
           <div className="space-y-2 pt-4">
-            <h3 className="text-sm font-bold text-muted-foreground">Recientes</h3>
-            {recentTranslations.slice(0, 8).map((t, i) => (
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-bold text-muted-foreground">Recientes</h3>
               <button
-                key={i}
                 onClick={() => {
-                  setInput(t.input);
-                  setOutput(t.output);
+                  setRecentTranslations([]);
+                  localStorage.removeItem('lq_recent_translations');
                 }}
-                className="w-full text-left p-3 rounded-lg border hover:bg-muted/50 transition"
+                className="text-xs text-muted-foreground hover:text-red-500"
               >
-                <div className="text-sm truncate">{t.input}</div>
-                <div className="text-sm text-primary truncate">{t.output}</div>
+                Tout effacer
               </button>
+            </div>
+            {recentTranslations.slice(0, 8).map((t, i) => (
+              <div key={i} className="flex gap-2 items-stretch">
+                <button
+                  onClick={() => {
+                    setInput(t.input);
+                    setOutput(t.output);
+                  }}
+                  className="flex-1 text-left p-3 rounded-lg border hover:bg-muted/50 transition"
+                >
+                  <div className="text-sm truncate">{t.input}</div>
+                  <div className="text-sm text-primary truncate">{t.output}</div>
+                </button>
+                <button
+                  onClick={() => {
+                    const updated = recentTranslations.filter((_, idx) => idx !== i);
+                    setRecentTranslations(updated);
+                    localStorage.setItem('lq_recent_translations', JSON.stringify(updated));
+                  }}
+                  className="px-2 rounded-lg border text-muted-foreground hover:text-red-500 hover:border-red-300 transition text-sm"
+                >
+                  🗑️
+                </button>
+              </div>
             ))}
           </div>
         )}
       </div>
     </main>
+  );
+}
+
+function MicButton({ onTranscript }: { onTranscript: (text: string) => void }) {
+  const [recording, setRecording] = useState(false);
+
+  const toggle = () => {
+    if (recording) {
+      setRecording(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const w = window as any;
+      w._translateSpeechRec?.stop();
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const w = window as any;
+      const SpeechRecAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
+      if (!SpeechRecAPI) { alert('Reconnaissance vocale non supportee'); return; }
+      const recognition = new SpeechRecAPI();
+      recognition.lang = ''; // Auto-detect
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      w._translateSpeechRec = recognition;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0]?.[0]?.transcript || '';
+        onTranscript(transcript);
+      };
+      recognition.onend = () => setRecording(false);
+      recognition.onerror = () => setRecording(false);
+      recognition.start();
+      setRecording(true);
+    }
+  };
+
+  return (
+    <Button
+      variant={recording ? 'default' : 'outline'}
+      onClick={toggle}
+      className={`py-6 px-6 text-xl ${recording ? 'bg-red-500 hover:bg-red-600 animate-pulse' : ''}`}
+      size="lg"
+    >
+      {recording ? '⏹️' : '🎤'}
+    </Button>
   );
 }
