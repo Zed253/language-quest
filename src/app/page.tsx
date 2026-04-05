@@ -53,20 +53,20 @@ export default function Dashboard() {
               <StatCard label="Mastered" value={stats.mastered} />
             </div>
 
-            {/* Start review button */}
-            {stats.due > 0 ? (
+            {/* Start session button (AI-powered) */}
+            <Link href="/session">
+              <Button size="lg" className="w-full text-lg py-6">
+                Start Today&apos;s Session
+              </Button>
+            </Link>
+
+            {/* Flashcard review */}
+            {stats.due > 0 && (
               <Link href="/review">
-                <Button size="lg" className="w-full text-lg py-6">
-                  Start Review ({stats.due} cards)
+                <Button size="lg" variant="outline" className="w-full text-lg py-6">
+                  Quick Review ({stats.due} flashcards)
                 </Button>
               </Link>
-            ) : (
-              <div className="text-center py-12 rounded-lg border border-dashed">
-                <p className="text-2xl mb-2">All caught up!</p>
-                <p className="text-muted-foreground">
-                  No cards due right now. Come back later.
-                </p>
-              </div>
             )}
 
             {/* Progress bar */}

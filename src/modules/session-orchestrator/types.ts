@@ -27,6 +27,8 @@ export interface SessionExercise {
     score: number;
     fsrsGrade: 1 | 2 | 3 | 4;
     feedback: string;
+    correction?: string;
+    grammarNote?: string;
     userAnswer: string;
     timeSpentMs: number;
   };
