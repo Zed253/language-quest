@@ -109,6 +109,25 @@ export async function getConversations(
   }
 }
 
+export async function deleteConversation(
+  userId: string,
+  conversationId: string
+): Promise<Result<void>> {
+  try {
+    const conversations = getStoredConversations(userId);
+    const filtered = conversations.filter(c => c.id !== conversationId);
+    setStoredConversations(userId, filtered);
+    return ok(undefined);
+  } catch (e) {
+    return err({
+      code: 'CHAT_DELETE_FAILED',
+      message: 'Failed to delete conversation',
+      module: 'chat-mentor',
+      cause: e,
+    });
+  }
+}
+
 export async function getConversation(
   userId: string,
   conversationId: string

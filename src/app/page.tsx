@@ -86,26 +86,29 @@ export default function Dashboard() {
             </div>
 
             {/* Main actions */}
-            <div className="grid grid-cols-2 gap-3">
-              <Link href="/session" className="col-span-2">
+            <div className="space-y-3">
+              <Link href="/session">
                 <Button size="lg" className="w-full text-lg py-8 animate-pulse-glow font-bold tracking-wide">
-                  &#x2693; Start Today&apos;s Session
+                  ⚓ Start Today&apos;s Session
                 </Button>
               </Link>
-              <Link href="/chat">
-                <Button variant="outline" className="w-full py-4 text-lg">
-                  &#x1F468;&#x200D;&#x1F373; Mentor
-                  <br/>
-                  <span className="text-xs text-muted-foreground">Chat + Traduction</span>
-                </Button>
-              </Link>
-              <Link href="/chat">
-                <Button variant="outline" className="w-full py-4 text-lg">
-                  &#x1F504; Traduccion
-                  <br/>
-                  <span className="text-xs text-muted-foreground">Rapide ou Aprender</span>
-                </Button>
-              </Link>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/translate">
+                  <Button variant="outline" className="w-full py-6 text-lg">
+                    🔄 Traduire
+                    <br/>
+                    <span className="text-xs text-muted-foreground">Rapide, copier-coller</span>
+                  </Button>
+                </Link>
+                <Link href="/chat">
+                  <Button variant="outline" className="w-full py-6 text-lg">
+                    👨‍🍳 Mentor
+                    <br/>
+                    <span className="text-xs text-muted-foreground">Apprendre, discuter</span>
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* Quick actions */}
