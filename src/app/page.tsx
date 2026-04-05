@@ -5,7 +5,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getStats } from '@/modules/fsrs-engine';
 import { useAuth } from '@/lib/auth';
+import { initAllListeners } from '@/lib/init-listeners';
 import { Button } from '@/components/ui/button';
+
+// Initialize event listeners on first load
+if (typeof window !== 'undefined') {
+  initAllListeners();
+}
 
 export default function Dashboard() {
   const router = useRouter();
@@ -80,14 +86,37 @@ export default function Dashboard() {
               </Button>
             </Link>
 
-            {/* Flashcard review */}
-            {stats.due > 0 && (
-              <Link href="/review">
-                <Button size="lg" variant="outline" className="w-full text-lg py-6">
-                  Quick Review ({stats.due} flashcards)
+            {/* Quick actions */}
+            <div className="grid grid-cols-2 gap-3">
+              {stats.due > 0 && (
+                <Link href="/snack">
+                  <Button variant="outline" className="w-full py-4">
+                    &#9889; Snack Mode<br/>
+                    <span className="text-xs text-muted-foreground">5 cards, 60 sec</span>
+                  </Button>
+                </Link>
+              )}
+              {stats.due > 0 && (
+                <Link href="/review">
+                  <Button variant="outline" className="w-full py-4">
+                    &#128218; Full Review<br/>
+                    <span className="text-xs text-muted-foreground">{stats.due} cards due</span>
+                  </Button>
+                </Link>
+              )}
+              <Link href="/countdown">
+                <Button variant="outline" className="w-full py-4">
+                  &#127758; Countdowns<br/>
+                  <span className="text-xs text-muted-foreground">Real deadlines</span>
                 </Button>
               </Link>
-            )}
+              <Link href="/crew">
+                <Button variant="outline" className="w-full py-4">
+                  &#128101; Crew<br/>
+                  <span className="text-xs text-muted-foreground">Partner & quests</span>
+                </Button>
+              </Link>
+            </div>
 
             {/* Progress bar */}
             {stats.total > 0 && (
