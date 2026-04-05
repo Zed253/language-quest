@@ -150,7 +150,7 @@ function SessionPageInner() {
           <div className={`rounded-xl border-2 p-6 space-y-3 ${
             isCorrect ? 'border-green-500 bg-green-50 dark:bg-green-950/20' : 'border-red-500 bg-red-50 dark:bg-red-950/20'
           }`}>
-            <div className="text-2xl">{isCorrect ? '&#10004;&#65039;' : '&#10060;'}</div>
+            <div className="text-2xl">{isCorrect ? '✅' : '❌'}</div>
             <p className="text-lg font-medium">{lastFeedback.feedback}</p>
             {lastFeedback.correction && (
               <p className="text-sm">
@@ -159,13 +159,13 @@ function SessionPageInner() {
             )}
             {lastFeedback.grammarNote && (
               <p className="text-sm text-muted-foreground italic">
-                &#128161; {lastFeedback.grammarNote}
+                💡 {lastFeedback.grammarNote}
               </p>
             )}
           </div>
 
           <Button size="lg" className="w-full" onClick={dismissFeedback}>
-            Continue
+            Continuar
           </Button>
         </div>
       </main>
@@ -284,7 +284,7 @@ function SessionPageInner() {
   return (
     <main className="min-h-screen bg-background p-8">
       <div className="max-w-lg mx-auto text-center pt-20">
-        <p className="text-muted-foreground">Loading session...</p>
+        <p className="text-muted-foreground">Cargando...</p>
       </div>
     </main>
   );
@@ -352,7 +352,7 @@ function FlashcardExercise({
         onClick={() => !revealed && setRevealed(true)}
       >
         <div className="text-xs text-muted-foreground mb-2">
-          {card.direction === 'l2-to-l1' ? '&#127466;&#127480; → &#127467;&#127479;' : '&#127467;&#127479; → &#127466;&#127480;'}
+          {card.direction === 'l2-to-l1' ? 'ES → FR' : 'FR → ES'}
         </div>
 
         {/* Audio button */}
@@ -361,14 +361,14 @@ function FlashcardExercise({
           className="text-2xl mb-3 hover:scale-110 transition-transform"
           disabled={audioPlaying}
         >
-          {audioPlaying ? '&#128266;' : '&#128264;'}
+          {audioPlaying ? '🔊' : '🔈'}
         </button>
 
         <div className="text-4xl font-bold mb-4">{front}</div>
 
         {/* Progressive hints */}
         {!revealed && hintLevel > 0 && hints.slice(0, hintLevel).map((hint, i) => (
-          <p key={i} className="text-sm text-amber-600 italic mt-2">&#128161; {hint}</p>
+          <p key={i} className="text-sm text-amber-600 italic mt-2">💡 {hint}</p>
         ))}
 
         {revealed ? (
@@ -383,19 +383,19 @@ function FlashcardExercise({
                 onClick={(e) => { e.stopPropagation(); playAudio(card.example_sentence); }}
                 className="text-xs text-primary underline"
               >
-                &#128264; Listen to example
+                🔈 Escuchar ejemplo
               </button>
             )}
           </div>
         ) : (
           <div className="space-y-2 mt-4">
-            <p className="text-sm text-muted-foreground">Tap to reveal</p>
+            <p className="text-sm text-muted-foreground">Toca para revelar</p>
             {hintLevel < hints.length && (
               <button
                 onClick={(e) => { e.stopPropagation(); setHintLevel(h => h + 1); }}
                 className="text-xs text-primary underline"
               >
-                Need a hint? ({hintLevel + 1}/{hints.length})
+                Una pista? ({hintLevel + 1}/{hints.length})
               </button>
             )}
           </div>
@@ -525,7 +525,7 @@ function LLMExercise({
 
         {/* Hints */}
         {hintIndex >= 0 && exercise.hints.slice(0, hintIndex + 1).map((hint, i) => (
-          <p key={i} className="text-sm text-amber-600 italic">&#128161; {hint}</p>
+          <p key={i} className="text-sm text-amber-600 italic">💡 {hint}</p>
         ))}
       </div>
 
