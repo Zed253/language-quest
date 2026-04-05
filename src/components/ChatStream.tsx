@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { MarkdownText } from '@/components/MarkdownText';
 
 // ============================================================
 // ChatStream -- streaming chat component
@@ -39,6 +40,7 @@ export function ChatStream({
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
   const [autoSent, setAutoSent] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -210,8 +212,12 @@ export function ChatStream({
                   : 'bg-muted rounded-bl-sm'
               }`}
             >
-              <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                {msg.content}
+              <div className="text-sm leading-relaxed">
+                {msg.role === 'assistant' ? (
+                  <MarkdownText text={msg.content} />
+                ) : (
+                  <span className="whitespace-pre-wrap">{msg.content}</span>
+                )}
                 {streaming && i === messages.length - 1 && msg.role === 'assistant' && (
                   <span className="animate-pulse ml-1">|</span>
                 )}
@@ -232,10 +238,46 @@ export function ChatStream({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
             placeholder={placeholder}
-            disabled={streaming}
+            disabled={streaming || isRecording}
             className="flex-1 p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
             autoFocus
           />
+          {/* Mic button */}
+          <Button
+            variant={isRecording ? 'default' : 'outline'}
+            onClick={async () => {
+              if (isRecording) {
+                setIsRecording(false);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const w = window as any;
+                w._speechRec?.stop();
+              } else {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const w = window as any;
+                const SpeechRecAPI = w.SpeechRecognition || w.webkitSpeechRecognition;
+                if (!SpeechRecAPI) { alert('Reconnaissance vocale non supportee dans ce navigateur'); return; }
+                const recognition = new SpeechRecAPI();
+                recognition.lang = 'es-ES';
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                w._speechRec = recognition;
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                recognition.onresult = (event: any) => {
+                  const transcript = event.results[0]?.[0]?.transcript || '';
+                  setInput(transcript);
+                };
+                recognition.onend = () => setIsRecording(false);
+                recognition.onerror = () => setIsRecording(false);
+                recognition.start();
+                setIsRecording(true);
+              }
+            }}
+            className={`rounded-xl px-4 ${isRecording ? 'bg-red-500 hover:bg-red-600 animate-pulse' : ''}`}
+            disabled={streaming}
+          >
+            {isRecording ? '⏹️' : '🎤'}
+          </Button>
           <Button
             onClick={sendMessage}
             disabled={streaming || !input.trim()}

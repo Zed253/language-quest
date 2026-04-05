@@ -11,7 +11,7 @@ import { addCards } from '@/modules/fsrs-engine';
 import { getMentorForUser, getMentorPrompt } from '@/modules/chat-mentor';
 import { getCharacter } from '@/modules/character-system';
 import { getUserProfile } from '@/modules/data-layer';
-import { saveConversation, getConversations, getConversation } from '@/modules/chat-mentor';
+import { saveConversation, getConversations, getConversation, deleteConversation } from '@/modules/chat-mentor';
 import type { MentorProfile, ConversationPreview } from '@/modules/chat-mentor';
 
 export default function ChatPage() {
@@ -131,19 +131,33 @@ function ChatPageInner() {
           ) : (
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {history.map(conv => (
-                <button
-                  key={conv.id}
-                  onClick={() => loadConversation(conv.id)}
-                  className="w-full text-left p-3 rounded-lg border hover:bg-muted/50 transition"
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium truncate flex-1">{conv.title}</span>
-                    <span className="text-xs text-muted-foreground ml-2">{conv.message_count} msgs</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {conv.mentor_name} · {new Date(conv.updated_at).toLocaleDateString()}
-                  </div>
-                </button>
+                <div key={conv.id} className="flex gap-2 items-stretch">
+                  <button
+                    onClick={() => loadConversation(conv.id)}
+                    className="flex-1 text-left p-3 rounded-lg border hover:bg-muted/50 transition"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium truncate flex-1">{conv.title}</span>
+                      <span className="text-xs text-muted-foreground ml-2">{conv.message_count} msgs</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {conv.mentor_name} · {new Date(conv.updated_at).toLocaleDateString()}
+                    </div>
+                  </button>
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!user) return;
+                      await deleteConversation(user.id, conv.id);
+                      const r = await getConversations(user.id);
+                      if (r.ok) setHistory(r.data);
+                    }}
+                    className="px-3 rounded-lg border text-muted-foreground hover:text-red-500 hover:border-red-300 transition"
+                    title="Supprimer"
+                  >
+                    🗑️
+                  </button>
+                </div>
               ))}
             </div>
           )}
